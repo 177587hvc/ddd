@@ -1,0 +1,12 @@
+{
+  "name": "class-pet-garden",
+  "version": "1.0.0",
+  "description": "班级宠物园 - 课堂积分与宠物养成系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
