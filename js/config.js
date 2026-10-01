@@ -227,8 +227,8 @@ function getPet(type) {
 /* Helper: get pet image path (stage 1-10)
    动物图片/{文件夹}/{1-10}.webp，如 动物图片/白猫十阶段图片/1.webp
    type -> 实际文件夹名，文件夹内需有 1.webp ~ 10.webp */
-/* 宠物图片统一走 Bitiful S3 桶（key = {folder}/{stage}.webp） */
-const PET_IMG_BASE = 'https://cxopeeef66.s3.bitiful.net';
+/* 宠物图片：神兽走 GitHub 仓库 + jsdelivr CDN（免费），普通动物无图时回退 emoji */
+const PET_IMG_BASE = 'https://cdn.jsdelivr.net/gh/177587hvc/ddd@main/pets';
 const PET_IMG_FOLDERS = {
   /* 原有动物（中文文件夹名） */
   baimao: '白猫十阶段图片', bixiong: '比熊十阶段图片', bianmu: '边牧十阶段图片',
@@ -323,10 +323,10 @@ function calcLevelInfo(fedLegs, levelConfig) {
     level: info.level,
     title: info.title,
     stage: info.stage,
-    progress,                       // 本级进度百分比
-    nextFeeds: nextMin,            // 升到下一级所需累计投喂数
-    currentMin: curMin,             // 本级起始投喂数
-    remaining: nextMin !== null ? nextMin - fedLegs : 0,  // 还差几次投喂
+    progress,
+    nextFeeds: nextMin,
+    currentMin: curMin,
+    remaining: nextMin !== null ? nextMin - fedLegs : 0,
   };
 }
 
@@ -363,7 +363,6 @@ function getLeaderboardWelfareScoreSigned(s) {
 function getDefaultPetHungerConfig() {
   return {
     enabled: true,
-    /** 寒暑假等：不计饥饿天数，宠物不会进入好饿/饿死（需同时「启用宠物饥饿」才有意义） */
     vacationMode: false,
     hungryAfterDays: 3,
     criticalAfterDays: 7,
@@ -409,7 +408,6 @@ function getEffectiveLastPetFedIso(student) {
   const sid = (student==null?void 0:student.id);
   const cid = (student==null?void 0:student.classId);
   if (typeof Store !== 'undefined' && Store.getRecordsForStudent && sid) {
-    // 渲染期使用预建索引（O(1)），非渲染期回落到 O(n) 过滤
     for (const r of Store.getRecordsForStudent(sid)) {
       if (!(r==null?void 0:r.createdAt)) continue;
       if (cid && r.classId && r.classId !== cid) continue;
@@ -445,7 +443,6 @@ function getPetHungerPhase(student, hungerCfg) {
   }
   let lastFedIso = getEffectiveLastPetFedIso(student);
   if (!lastFedIso) {
-    // 历史数据：无 createdAt、无积分/投喂记录、无 lastPetFedAt 时原先会永远不饿
     const daysBack = hungryAfter + 1;
     lastFedIso = new Date(Date.now() - daysBack * 86400000).toISOString();
   }
