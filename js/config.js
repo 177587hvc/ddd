@@ -1,8 +1,15 @@
-﻿/* ═══════════════════════ CONFIG.JS ═══════════════════════
+/* ═══════════════════════ CONFIG.JS ═══════════════════════
    Pet types, level settings, constants
 ═══════════════════════════════════════════════════════════ */
 
 const PET_TYPES = [
+  /* 《有兽焉》神兽（本地自用） */
+  { type: 'tianlu', name: '天禄', emoji: '🐉' },
+  { type: 'bixie', name: '辟邪', emoji: '🐉' },
+  { type: 'sibuxiang', name: '四不像', emoji: '🦌' },
+  { type: 'tuye', name: '兔爷', emoji: '🐰' },
+  { type: 'jinjiao', name: '金角', emoji: '🐹' },
+  { type: 'yinjiao', name: '银角', emoji: '🐹' },
   /* 原有动物（保留图片显示） */
   { type: 'baimao', name: '白猫', emoji: '🐱' },
   { type: 'bixiong', name: '比熊', emoji: '🐶' },
@@ -196,7 +203,7 @@ const SHOP_ICONS_CATEGORIES = {
   entertainment: {
     label: '娱乐',
     icon: 'ri-gamepad-line',
-    icons: ['ri-gamepad-line', 'ri-gamepad-2-line', 'ri-music-line', 'ri-music-2-line', 'ri-movie-line', 'ri-movie-2-line', 'ri-basketball-line', 'ri-football-line', 'ri-camera-line', 'ri-mic-line', 'ri-headphone-line', 'ri-tv-line', 'ri-remote-control-line', 'ri-run-line', 'ri-swim-line'],
+    icons: ['ri-gamepad-line', 'ri-gamepad-2-line', 'ri-music-line', 'ri-movie-line', 'ri-movie-2-line', 'ri-basketball-line', 'ri-football-line', 'ri-camera-line', 'ri-mic-line', 'ri-headphone-line', 'ri-tv-line', 'ri-remote-control-line', 'ri-run-line', 'ri-swim-line'],
   },
   privilege: {
     label: '特权',
@@ -209,7 +216,7 @@ const SHOP_ICONS_CATEGORIES = {
     icons: ['ri-gift-line', 'ri-heart-line', 'ri-star-half-line', 'ri-flag-line', 'ri-palette-line', 'ri-brush-2-line', 'ri-shopping-bag-line', 'ri-shopping-cart-line', 'ri-basket-line', 'ri-24-hours-line', 'ri-home-smile-line', 'ri-plant-line', 'ri-sun-line', 'ri-moon-line', 'ri-apps-line'],
   },
 };
-const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apple-line'];
+const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apps-line'];
 const SHOP_COLORS = ['#e9d5ff', '#8b5cf6', '#f97316', '#ec4899', '#67e8f9', '#fbbf24', '#86efac', '#f472b6', '#94a3b8', '#ef4444'];
 
 /* Helper: get pet info by type */
@@ -272,8 +279,13 @@ var _supportsWebP = (function() {
   } catch(e) { return false; }
 })();
 
+/* 《有兽焉》神兽类型（10 阶段共用一张图） */
+const SHENSHOU_TYPES = ['tianlu', 'bixie', 'sibuxiang', 'tuye', 'jinjiao', 'yinjiao'];
+
 function getPetImg(type, stage) {
   stage = Math.max(1, Math.min(10, Math.round(stage || 1)));
+  /* 《有兽焉》神兽：10 阶段共用同一张图，始终取 1.webp */
+  if (SHENSHOU_TYPES.indexOf(type) >= 0) stage = 1;
   var folder = PET_IMG_FOLDERS[type] || type;
   var ext = _supportsWebP ? '.webp' : '.png';
   return PET_IMG_BASE + '/' + folder + '/' + stage + ext;
@@ -365,7 +377,7 @@ function daysSinceLastPetFed(lastFedIso) {
     const d = new Date(lastFedIso);
     const t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     const n = new Date();
-    const t1 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+    const t1 = new Date(n.getFullYear(), n.getMonth(), d.getDate()).getTime();
     return Math.max(0, Math.floor((t1 - t0) / 86400000));
   } catch(e) {
     return 0;
