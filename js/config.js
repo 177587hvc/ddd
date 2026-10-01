@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════ CONFIG.JS ═══════════════════════
+/* ═══════════════════════ CONFIG.JS ═══════════════════════
    Pet types, level settings, constants
 ═══════════════════════════════════════════════════════════ */
 
@@ -216,7 +216,7 @@ const SHOP_ICONS_CATEGORIES = {
     icons: ['ri-gift-line', 'ri-heart-line', 'ri-star-half-line', 'ri-flag-line', 'ri-palette-line', 'ri-brush-2-line', 'ri-shopping-bag-line', 'ri-shopping-cart-line', 'ri-basket-line', 'ri-24-hours-line', 'ri-home-smile-line', 'ri-plant-line', 'ri-sun-line', 'ri-moon-line', 'ri-apps-line'],
   },
 };
-const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apple-line'];
+const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apps-line'];
 const SHOP_COLORS = ['#e9d5ff', '#8b5cf6', '#f97316', '#ec4899', '#67e8f9', '#fbbf24', '#86efac', '#f472b6', '#94a3b8', '#ef4444'];
 
 /* Helper: get pet info by type */
