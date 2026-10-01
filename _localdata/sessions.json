@@ -17,5 +17,17 @@
     "data": {},
     "version": 1,
     "updatedAt": "2026-10-01T00:36:35.270Z"
+  },
+  "6181d85b3e104ab2cdcddfcba8f4f2c1aa29243730b172825ff39d2b5f210495": {
+    "username": "teacher",
+    "createdAt": 1790817437956,
+    "data": {
+      "pets_classes": "[]",
+      "pets_students": "[]",
+      "last_write": 1727712000000,
+      "pets_records": "[]"
+    },
+    "version": 2,
+    "updatedAt": "2026-10-01T00:36:35.292Z"
   }
 }
