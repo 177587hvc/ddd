@@ -1,14 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="renderer" content="webkit">
+  <!-- 强制浏览器不缓存 HTML 入口文件，确保每次都拉取带版本号的新资源 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>班级宠物园</title>
+  <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="头像.jpg">
   <link rel="shortcut icon" type="image/jpeg" href="头像.jpg">
   <link rel="apple-touch-icon" href="头像.jpg">
@@ -24,16 +27,25 @@
   </script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/certificate.css">
+  <!-- Remix Icon 本地 vendor，避免 CDN 访问卡住 -->
   <link rel="stylesheet" href="vendor/remixicon/remixicon.css">
+  <!-- Excel 库改为按需加载，见 loadXLSX() -->
+
 <script>window.__serverAuthed=false;window.__sessionTeacherId=null;</script>
 </head>
+
 <body>
-  <div id="app-loading-screen" style="position: fixed; top:0;right:0;bottom:0;left:0; background: #f8f7ff; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+  <!-- 页面加载过渡动画 -->
+  <div id="app-loading-screen"
+    style="position: fixed; top:0;right:0;bottom:0;left:0; background: #f8f7ff; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
     <div style="font-size: 3rem; animation: pulse 1.5s infinite;">🐾</div>
     <div style="margin-top: 1rem; color: #7c3aed; font-weight: 600; font-size: 1.1rem;">系统加载中...</div>
   </div>
+
+  <!-- ══════════════════ AUTH PAGE ══════════════════ -->
   <section id="page-auth" class="page">
     <div class="auth-bg">
+      <!-- Floating pet decorations -->
       <div class="auth-floats" aria-hidden="true">
         <span class="af af1">🐱</span><span class="af af2">🐶</span>
         <span class="af af3">🐼</span><span class="af af4">🦊</span>
@@ -63,8 +75,10 @@
         </div>
         <div id="form-register" class="auth-form hidden">
           <div class="form-field">
-            <label>账号 <span style="color:var(--text-muted);font-size:.78rem;font-weight:500">（推荐使用手机号，便于记忆；仅限英文字母与数字，最多50字）</span></label>
-            <input type="text" id="reg-username" placeholder="例如：13800138000 或 teacher01" autocomplete="username" maxlength="50" pattern="[A-Za-z0-9]*" title="仅英文字母与数字">
+            <label>账号 <span
+                style="color:var(--text-muted);font-size:.78rem;font-weight:500">（推荐使用手机号，便于记忆；仅限英文字母与数字，最多50字）</span></label>
+            <input type="text" id="reg-username" placeholder="例如：13800138000 或 teacher01" autocomplete="username"
+              maxlength="50" pattern="[A-Za-z0-9]*" title="仅英文字母与数字">
           </div>
           <div class="form-field">
             <label>姓名</label>
@@ -80,14 +94,18 @@
           </div>
           <div class="form-field">
             <label>激活码 <span style="color:#f59e0b;font-size:.78rem">（注册必填，请向管理员获取）</span></label>
-            <input type="text" id="reg-activation-code" placeholder="格式：XXXX-XXXX-XXXX" style="text-transform:uppercase;letter-spacing:.1em;font-family:monospace">
+            <input type="text" id="reg-activation-code" placeholder="格式：XXXX-XXXX-XXXX"
+              style="text-transform:uppercase;letter-spacing:.1em;font-family:monospace">
           </div>
-          <a href="#" id="link-get-activation-code" class="btn-primary btn-block" target="_blank" rel="noopener" style="display:none;text-decoration:none;color:#fff">获取激活码</a>
+          <a href="#" id="link-get-activation-code" class="btn-primary btn-block" target="_blank" rel="noopener"
+            style="display:none;text-decoration:none;color:#fff">获取激活码</a>
           <button class="btn-primary btn-block" id="btn-register">注 册</button>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- ══════════════════ DASHBOARD PAGE ══════════════════ -->
   <section id="page-dashboard" class="page">
     <header class="main-header">
       <div class="header-left">
@@ -107,7 +125,10 @@
       <div id="classes-grid" class="classes-grid"></div>
     </div>
   </section>
+
+  <!-- ══════════════════ CLASS PAGE ══════════════════ -->
   <section id="page-class" class="page">
+    <!-- 顶部导航椭圆容器：电脑端为椭圆样式，所有导航内容在内 -->
     <div class="class-nav-oval">
       <header class="class-header">
         <div class="ch-left">
@@ -138,34 +159,68 @@
           <button class="ch-rbtn ch-rbtn-settings ch-rbtn-mob-hide" id="nav-settings-btn">⚙️ 老师设置 ▾</button>
         </div>
       </header>
-    </div>
+    </div><!-- .class-nav-oval -->
+
+    <!-- Mobile bottom bar -->
     <div class="mob-bottom-bar" id="mob-bottom-bar">
-      <button class="mob-bb-btn mob-bb-honor" data-mob-action="honor"><span class="mob-bb-icon">🏆</span><span class="mob-bb-label">光荣榜</span></button>
-      <button class="mob-bb-btn" data-mob-action="shop"><span class="mob-bb-icon">🛒</span><span class="mob-bb-label">小卖部</span></button>
-      <button class="mob-bb-btn" data-mob-action="undo"><span class="mob-bb-icon">↩</span><span class="mob-bb-label">撤回</span></button>
-      <button class="mob-bb-btn mob-bb-settings" data-mob-action="settings"><span class="mob-bb-icon">⚙️</span><span class="mob-bb-label">老师设置</span></button>
+      <button class="mob-bb-btn mob-bb-honor" data-mob-action="honor">
+        <span class="mob-bb-icon">🏆</span>
+        <span class="mob-bb-label">光荣榜</span>
+      </button>
+      <button class="mob-bb-btn" data-mob-action="shop">
+        <span class="mob-bb-icon">🛒</span>
+        <span class="mob-bb-label">小卖部</span>
+      </button>
+      <button class="mob-bb-btn" data-mob-action="undo">
+        <span class="mob-bb-icon">↩</span>
+        <span class="mob-bb-label">撤回</span>
+      </button>
+      <button class="mob-bb-btn mob-bb-settings" data-mob-action="settings">
+        <span class="mob-bb-icon">⚙️</span>
+        <span class="mob-bb-label">老师设置</span>
+      </button>
     </div>
+
+    <!-- Group filter pills -->
+    <!-- Hidden tabs (JS switching still works) -->
     <div id="class-tabs" class="class-tabs" style="display:none">
       <button class="tab-btn active" data-tab="students">学生列表</button>
       <button class="tab-btn" data-tab="groups">小组管理</button>
       <button class="tab-btn" data-tab="records">积分记录</button>
       <button class="tab-btn" data-tab="shop">小卖部</button>
     </div>
+
+    <!-- Tab Contents -->
     <div class="class-content">
+
+      <!-- STUDENTS TAB -->
       <div id="tab-students" class="tab-content active">
         <div class="gfbar gfbar-in-cards" id="group-filter-bar"></div>
+        
+        <!-- 手机端专用：小组下方显眼的快捷操作按钮 -->
         <div class="mob-action-bar">
-          <button class="mob-action-btn" id="mob-shout-btn"><i class="ri-megaphone-line"></i> <span>隔空喊话</span></button>
-          <button class="mob-action-btn" id="mob-batch-btn"><i class="ri-menu-2-line"></i> <span>批量操作</span></button>
+          <button class="mob-action-btn" id="mob-shout-btn">
+            <i class="ri-megaphone-line"></i> <span>隔空喊话</span>
+          </button>
+          <button class="mob-action-btn" id="mob-batch-btn">
+            <i class="ri-menu-2-line"></i> <span>批量操作</span>
+          </button>
         </div>
+
         <div class="filter-bar">
           <input type="text" id="filter-name" class="filter-input" placeholder="🔍 搜索姓名或宠物">
-          <select id="filter-pet" class="filter-select"><option value="">全部宠物</option></select>
-          <select id="filter-group" class="filter-select"><option value="">全部小组</option></select>
+          <select id="filter-pet" class="filter-select">
+            <option value="">全部宠物</option>
+          </select>
+          <select id="filter-group" class="filter-select">
+            <option value="">全部小组</option>
+          </select>
           <div class="filter-score">
-            <input type="number" id="filter-score-min" class="filter-input-sm" placeholder="最低积分">
+            <input type="number" id="filter-score-min" class="filter-input-sm" placeholder="最低积分"
+              title="按福利总积分筛选（与卡片左下角🏆一致）">
             <span>-</span>
-            <input type="number" id="filter-score-max" class="filter-input-sm" placeholder="最高积分">
+            <input type="number" id="filter-score-max" class="filter-input-sm" placeholder="最高积分"
+              title="按福利总积分筛选（与卡片左下角🏆一致）">
           </div>
           <button class="btn-sm btn-ghost" id="btn-filter-reset">重置</button>
         </div>
@@ -182,22 +237,41 @@
         </div>
         <div id="students-grid" class="students-grid"></div>
       </div>
+
+      <!-- GROUPS TAB -->
       <div id="tab-groups" class="tab-content">
-        <div class="tab-toolbar"><h3>小组管理</h3><button class="btn-primary btn-sm" id="btn-create-group">＋ 创建小组</button></div>
+        <div class="tab-toolbar">
+          <h3>小组管理</h3>
+          <button class="btn-primary btn-sm" id="btn-create-group">＋ 创建小组</button>
+        </div>
         <div id="groups-list" class="groups-list"></div>
       </div>
+
+      <!-- RECORDS TAB -->
       <div id="tab-records" class="tab-content">
         <div class="tab-toolbar">
           <h3>积分记录</h3>
           <div class="records-filters">
-            <select id="records-filter-type" class="filter-select"><option value="">全部类型</option><option value="add">加分</option><option value="deduct">扣分</option><option value="redeem">兑换</option></select>
-            <select id="records-filter-mode" class="filter-select"><option value="student">👥 按学生分组</option><option value="time">🕒 按时间倒序</option></select>
-            <select id="records-filter-student" class="filter-select"><option value="">全部学生</option></select>
-            <button type="button" class="btn-ghost btn-sm" id="btn-records-export">📤 导出</button>
+            <select id="records-filter-type" class="filter-select">
+              <option value="">全部类型</option>
+              <option value="add">加分</option>
+              <option value="deduct">扣分</option>
+              <option value="redeem">兑换</option>
+            </select>
+            <select id="records-filter-mode" class="filter-select">
+              <option value="student">👥 按学生分组</option>
+              <option value="time">🕒 按时间倒序</option>
+            </select>
+            <select id="records-filter-student" class="filter-select">
+              <option value="">全部学生</option>
+            </select>
+            <button type="button" class="btn-ghost btn-sm" id="btn-records-export" title="按当前筛选导出为 CSV">📤 导出</button>
           </div>
         </div>
         <div id="records-list" class="records-list"></div>
       </div>
+
+      <!-- SHOP TAB -->
       <div id="tab-shop" class="tab-content">
         <div class="tab-toolbar">
           <h3>小卖部</h3>
@@ -208,25 +282,39 @@
         </div>
         <div id="shop-grid" class="shop-grid"></div>
       </div>
-    </div>
-    <button type="button" class="class-share-fab" id="class-share-fab" title="分享给家长（全班宠物概览）" aria-label="分享全班概览">🔗 分享家长</button>
+
+    </div><!-- end class-content -->
+    <button type="button" class="class-share-fab" id="class-share-fab" title="分享给家长（全班宠物概览）" aria-label="分享全班概览">🔗
+      分享家长</button>
   </section>
+
+  <!-- ══════════════════ MODAL OVERLAY ══════════════════ -->
   <div id="modal-overlay" class="modal-overlay">
     <div id="modal-box" class="modal-box">
-      <div class="modal-header"><h3 id="modal-title">标题</h3><button class="modal-close" id="modal-close">✕</button></div>
-      <div class="modal-body" class="modal-body"></div>
-      <div class="modal-footer" class="modal-footer"></div>
+      <div class="modal-header">
+        <h3 id="modal-title">标题</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+      <div id="modal-footer" class="modal-footer"></div>
     </div>
   </div>
+
+  <!-- ══════════════════ BIG SCREEN OVERLAY ══════════════════ -->
   <div id="big-screen" class="fullscreen-overlay">
     <div class="bs-header">
-      <div class="bs-title-wrap"><span class="bs-logo">🐾</span><h1 id="bs-class-name" class="bs-class-name">班级名称</h1></div>
+      <div class="bs-title-wrap">
+        <span class="bs-logo">🐾</span>
+        <h1 id="bs-class-name" class="bs-class-name">班级名称</h1>
+      </div>
       <div class="bs-stats" id="bs-stats"></div>
       <button class="bs-close" id="bs-close">✕ 退出大屏</button>
     </div>
     <div id="bs-podium" class="bs-podium"></div>
     <div id="bs-cards" class="bs-cards"></div>
   </div>
+
+  <!-- ══════════════════ ROLL CALL OVERLAY ══════════════════ -->
   <div id="roll-call" class="fullscreen-overlay rc-overlay">
     <div class="rc-content">
       <h2 class="rc-title">🎲 随机点名</h2>
@@ -250,19 +338,32 @@
       <div id="rc-winners" class="rc-winners"></div>
     </div>
   </div>
+
+  <!-- ══════════════════ REMOTE SCORE OVERLAY ══════════════════ -->
   <div id="remote-score" class="fullscreen-overlay rs-overlay">
     <div class="rs-content">
       <div class="rs-header">
-        <div class="rs-header-left"><h2>🎮 遥控加分</h2><span class="rs-header-hint">点击学生加入待操作列表，再点击「确认加分」提交</span></div>
+        <div class="rs-header-left">
+          <h2>🎮 遥控加分</h2>
+          <span class="rs-header-hint">点击学生加入待操作列表，再点击「确认加分」提交</span>
+        </div>
         <button class="btn-ghost" id="rs-close">✕ 关闭</button>
       </div>
+
       <div class="rs-body">
+        <!-- 左：学生列表 -->
         <div class="rs-left">
-          <label class="rs-search-wrap"><i class="ri ri-search-line" style="font-size:1rem;opacity:.6"></i><input type="text" id="rs-student-search" class="rs-search-input" placeholder="搜索学生姓名或宠物"></label>
+          <label class="rs-search-wrap">
+            <i class="ri ri-search-line" style="font-size:1rem;opacity:.6"></i>
+            <input type="text" id="rs-student-search" class="rs-search-input" placeholder="搜索学生姓名或宠物">
+          </label>
           <p class="rs-hint">点击学生卡片 → 加入待操作</p>
           <div id="rs-student-list" class="rs-student-list"></div>
         </div>
+
+        <!-- 右：控制面板 -->
         <div class="rs-right">
+          <!-- 分值选择 -->
           <div class="rs-control">
             <label>操作值</label>
             <div id="rs-score-btns-wrap" class="rs-score-btns">
@@ -284,19 +385,29 @@
               <input type="text" id="rs-reason" placeholder="请输入加分原因" class="form-input">
             </div>
           </div>
+
+          <!-- 待操作列表 -->
           <div class="rs-pending-box">
             <div class="rs-pending-header">
               <span class="rs-pending-title">待操作</span>
               <span id="rs-pending-count" class="rs-pending-count">0 人</span>
               <button class="rs-pending-clear" id="rs-pending-clear">清空</button>
             </div>
-            <div id="rs-pending-list" class="rs-pending-list"><p class="rs-pending-empty">点击左侧学生加入列表</p></div>
-            <button class="rs-confirm-btn" id="rs-confirm-btn" disabled><span class="rs-confirm-icon">✓</span><span id="rs-confirm-text">确认加分</span></button>
+            <div id="rs-pending-list" class="rs-pending-list">
+              <p class="rs-pending-empty">点击左侧学生加入列表</p>
+            </div>
+            <!-- 确认按钮 -->
+            <button class="rs-confirm-btn" id="rs-confirm-btn" disabled>
+              <span class="rs-confirm-icon">✓</span>
+              <span id="rs-confirm-text">确认加分</span>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- ══════════════════ LUCKY WHEEL OVERLAY ══════════════════ -->
   <div id="lucky-wheel" class="fullscreen-overlay lw-overlay" aria-hidden="true">
     <div class="lw-content-window">
       <div class="lw-header-new">
@@ -304,6 +415,7 @@
         <div id="lw-display-result-new" class="lw-result-placeholder">??</div>
         <button class="lw-close-new" id="lw-close">✕</button>
       </div>
+
       <div class="lw-wheel-box-new">
         <canvas id="lw-canvas" width="600" height="600"></canvas>
         <div id="lw-spin-btn" class="lw-go-btn-new">
@@ -311,10 +423,12 @@
           <div class="lw-go-inner-new">GO</div>
         </div>
       </div>
+
       <div class="lw-footer-new">
         <div class="lw-foot-btn-new" id="lw-settings-btn" title="配置"><i class="ri-settings-3-line"></i></div>
         <div class="lw-foot-btn-new" id="lw-edit-btn" title="编辑奖励"><i class="ri-edit-box-line"></i></div>
       </div>
+
       <div id="lw-result-wrap" class="lw-result-overlay-new hidden">
         <div class="lw-result-card-new">
           <div class="lw-res-label-new">恭喜获得</div>
@@ -324,9 +438,14 @@
       </div>
     </div>
   </div>
+
+  <!-- ══════════════════ GROUP RANK OVERLAY ══════════════════ -->
   <div id="group-rank" class="fullscreen-overlay gr-overlay">
     <div class="hr-header">
-      <div class="hr-title-wrap"><span class="hr-crown">👥</span><h2 class="hr-title">小组榜</h2></div>
+      <div class="hr-title-wrap">
+        <span class="hr-crown">👥</span>
+        <h2 class="hr-title">小组榜</h2>
+      </div>
       <button class="hr-close" id="gr-close">✕ 关闭</button>
     </div>
     <div class="hr-subheader">
@@ -340,22 +459,29 @@
     </div>
     <div id="gr-list" class="hr-list gr-list"></div>
   </div>
+
+  <!-- ══════════════════ HONOR ROLL ══════════════════ -->
   <div id="honor-roll" class="fullscreen-overlay hr-overlay">
     <div class="hr-header">
-      <div class="hr-title-wrap"><span class="hr-crown">👑</span><h2 class="hr-title">光荣榜</h2></div>
+      <div class="hr-title-wrap">
+        <span class="hr-crown">👑</span>
+        <h2 class="hr-title">光荣榜</h2>
+      </div>
       <button class="hr-close" id="hr-close">✕ 关闭</button>
     </div>
     <div class="hr-subheader">
       <div class="hr-period-tabs" id="hr-period-tabs" role="tablist" aria-label="排行榜周期">
-        <button class="hr-tab active" data-hr-period="total" role="tab" aria-selected="true">总榜</button>
-        <button class="hr-tab" data-hr-period="day" role="tab" aria-selected="false">日榜</button>
-        <button class="hr-tab" data-hr-period="week" role="tab" aria-selected="false">周榜</button>
-        <button class="hr-tab" data-hr-period="month" role="tab" aria-selected="false">月榜</button>
+        <button type="button" class="hr-tab active" data-hr-period="total" role="tab" aria-selected="true">总榜</button>
+        <button type="button" class="hr-tab" data-hr-period="day" role="tab" aria-selected="false">日榜</button>
+        <button type="button" class="hr-tab" data-hr-period="week" role="tab" aria-selected="false">周榜</button>
+        <button type="button" class="hr-tab" data-hr-period="month" role="tab" aria-selected="false">月榜</button>
       </div>
       <p class="hr-period-desc" id="hr-period-desc"></p>
     </div>
     <div id="hr-list" class="hr-list"></div>
   </div>
+
+  <!-- ══════════════════ HOMEWORK STATS OVERLAY ══════════════════ -->
   <div id="homework-stats" class="fullscreen-overlay hw-overlay">
     <div class="hw-container">
       <div class="hw-header">
@@ -366,31 +492,49 @@
           <button class="hw-close-btn" id="hw-close-btn">✕</button>
         </div>
       </div>
+      
       <div class="hw-task-selector" id="hw-task-selector" style="display: none;">
         <div class="hw-task-list" id="hw-task-list"></div>
-        <div class="hw-task-actions"><button class="hw-task-add-btn" id="hw-task-add-btn">➕ 添加新任务</button></div>
+        <div class="hw-task-actions">
+          <button class="hw-task-add-btn" id="hw-task-add-btn">➕ 添加新任务</button>
+        </div>
       </div>
+      
       <div class="hw-body">
         <div class="hw-content">
+          <!-- 左侧：未完成 -->
           <div class="hw-section hw-incomplete">
             <div class="hw-section-header">
-              <div class="hw-section-title">📝 未完成 <span class="hw-count-badge" id="hw-incomplete-count">0</span></div>
+              <div class="hw-section-title">
+                📝 未完成 <span class="hw-count-badge" id="hw-incomplete-count">0</span>
+              </div>
               <div class="hw-section-actions">
-                <button class="hw-action-btn hw-penalty-btn" id="hw-penalty-btn">➖ 批量减分</button>
-                <button class="hw-action-btn hw-shuffle-btn" id="hw-shuffle-btn">🔀 随机排序</button>
+                <button class="hw-action-btn hw-penalty-btn" id="hw-penalty-btn">
+                  ➖ 批量减分
+                </button>
+                <button class="hw-action-btn hw-shuffle-btn" id="hw-shuffle-btn">
+                  🔀 随机排序
+                </button>
               </div>
             </div>
             <div class="hw-student-grid" id="hw-incomplete-grid"></div>
           </div>
+          
+          <!-- 右侧：已完成 -->
           <div class="hw-section hw-completed">
             <div class="hw-section-header">
-              <div class="hw-section-title">✅ 已完成 <span class="hw-count-badge" id="hw-completed-count">0</span></div>
-              <button class="hw-action-btn hw-reward-btn" id="hw-reward-btn">⭐ 批量加分</button>
+              <div class="hw-section-title">
+                ✅ 已完成 <span class="hw-count-badge" id="hw-completed-count">0</span>
+              </div>
+              <button class="hw-action-btn hw-reward-btn" id="hw-reward-btn">
+                ⭐ 批量加分
+              </button>
             </div>
             <div class="hw-student-grid" id="hw-completed-grid"></div>
           </div>
         </div>
       </div>
+      
       <div class="hw-footer">
         <div class="hw-timer-display" id="hw-timer-display">00:00</div>
         <div class="hw-timer-controls">
@@ -403,7 +547,11 @@
       </div>
     </div>
   </div>
+
+  <!-- ══════════════════ TOAST ══════════════════ -->
   <div id="toast-container" class="toast-container"></div>
+
+  <!-- ══════════════════ SCREEN LOCK ══════════════════ -->
   <div id="screen-lock-bar" class="screen-lock-bar" aria-hidden="true">🔒 屏幕已锁定 · 仅可浏览，点击任意位置输入密码解锁</div>
   <div id="screen-lock-guard" class="screen-lock-guard" aria-hidden="true"></div>
   <div id="screen-lock-overlay" class="screen-lock-overlay" aria-hidden="true">
@@ -412,14 +560,18 @@
       <div class="screen-lock-icon" aria-hidden="true">🔒</div>
       <h2 class="screen-lock-title">屏幕已锁定</h2>
       <p class="screen-lock-sub">请输入锁屏密码解锁</p>
-      <input type="password" id="screen-lock-input" class="screen-lock-input filter-input" placeholder="锁屏密码" autocomplete="off" aria-label="锁屏密码">
+      <input type="password" id="screen-lock-input" class="screen-lock-input filter-input" placeholder="锁屏密码"
+        autocomplete="off" aria-label="锁屏密码">
       <button type="button" class="btn-primary screen-lock-unlock-btn" id="screen-lock-unlock-btn">解锁</button>
       <p class="screen-lock-forgot-hint">忘记锁屏密码？请到<strong>班级列表页右上角</strong>点击「退出登录」后重新登录即可。</p>
       <button type="button" class="btn-ghost screen-lock-forgot-btn" id="screen-lock-forgot-btn">忘记密码 · 退出登录</button>
     </div>
   </div>
+
+  <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/effects.js"></script>
+  <!-- 实时同步模块 - 必须在 store.js 之前加载 -->
   <script src="js/realtime-sync.js"></script>
   <script src="js/store.js"></script>
   <script src="js/ui.js"></script>
@@ -440,4 +592,5 @@
   </script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
