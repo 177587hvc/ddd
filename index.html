@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>班级宠物园</title>
+  <link rel="icon" type="image/jpeg" href="头像.jpg">
+  <link rel="shortcut icon" type="image/jpeg" href="头像.jpg">
+  <link rel="apple-touch-icon" href="头像.jpg">
+  <script>
+  (function(){
+    var start = Date.now();
+    var isOld = !window.CSS || !CSS.supports || !CSS.supports('backdrop-filter','blur(1px)');
+    if (!isOld) {
+      try { var c = document.createElement('canvas'); c.width=1; c.height=1; c.getContext('2d'); var d = Date.now()-start; if(d>50) isOld=true; } catch(e){ isOld=true; }
+    }
+    if (isOld) document.documentElement.className += ' low-perf';
+  })();
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/certificate.css">
+  <link rel="stylesheet" href="vendor/remixicon/remixicon.css">
+<script>window.__serverAuthed=false;window.__sessionTeacherId=null;</script>
+</head>
+<body>
+  <div id="app-loading-screen" style="position: fixed; top:0;right:0;bottom:0;left:0; background: #f8f7ff; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+    <div style="font-size: 3rem; animation: pulse 1.5s infinite;">🐾</div>
+    <div style="margin-top: 1rem; color: #7c3aed; font-weight: 600; font-size: 1.1rem;">系统加载中...</div>
+  </div>
+  <section id="page-auth" class="page">
+    <div class="auth-bg">
+      <div class="auth-floats" aria-hidden="true">
+        <span class="af af1">🐱</span><span class="af af2">🐶</span>
+        <span class="af af3">🐼</span><span class="af af4">🦊</span>
+        <span class="af af5">🐰</span><span class="af af6">🐸</span>
+        <span class="af af7">🦋</span><span class="af af8">🦁</span>
+      </div>
+      <div class="auth-card">
+        <div class="auth-logo">
+          <span class="logo-icon">🐾</span>
+          <h1 class="logo-title">班级宠物园</h1>
+          <p class="logo-sub">让学习充满乐趣，让成长看得见</p>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth="login">登录</button>
+          <button class="auth-tab" data-auth="register">注册</button>
+        </div>
+        <div id="form-login" class="auth-form">
+          <div class="form-field">
+            <label>账号</label>
+            <input type="text" id="login-username" placeholder="手机号或注册时的账号" autocomplete="username" maxlength="50">
+          </div>
+          <div class="form-field">
+            <label>密码</label>
+            <input type="password" id="login-password" placeholder="请输入密码" autocomplete="current-password">
+          </div>
+          <button class="btn-primary btn-block" id="btn-login">登 录</button>
+        </div>
+        <div id="form-register" class="auth-form hidden">
+          <div class="form-field">
+            <label>账号 <span style="color:var(--text-muted);font-size:.78rem;font-weight:500">（推荐使用手机号，便于记忆；仅限英文字母与数字，最多50字）</span></label>
+            <input type="text" id="reg-username" placeholder="例如：13800138000 或 teacher01" autocomplete="username" maxlength="50" pattern="[A-Za-z0-9]*" title="仅英文字母与数字">
+          </div>
+          <div class="form-field">
+            <label>姓名</label>
+            <input type="text" id="reg-name" placeholder="请输入真实姓名">
+          </div>
+          <div class="form-field">
+            <label>密码</label>
+            <input type="password" id="reg-password" placeholder="设置密码（至少6位）">
+          </div>
+          <div class="form-field">
+            <label>确认密码</label>
+            <input type="password" id="reg-confirm" placeholder="再次输入密码">
+          </div>
+          <div class="form-field">
+            <label>激活码 <span style="color:#f59e0b;font-size:.78rem">（注册必填，请向管理员获取）</span></label>
+            <input type="text" id="reg-activation-code" placeholder="格式：XXXX-XXXX-XXXX" style="text-transform:uppercase;letter-spacing:.1em;font-family:monospace">
+          </div>
+          <a href="#" id="link-get-activation-code" class="btn-primary btn-block" target="_blank" rel="noopener" style="display:none;text-decoration:none;color:#fff">获取激活码</a>
+          <button class="btn-primary btn-block" id="btn-register">注 册</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="page-dashboard" class="page">
+    <header class="main-header">
+      <div class="header-left">
+        <span class="logo-sm">🐾</span>
+        <span class="site-name">萌宠教学系统</span>
+      </div>
+      <div class="header-right">
+        <span id="teacher-name" class="teacher-name" title="点击修改姓名"></span>
+        <button class="btn-ghost" id="btn-logout">退出登录</button>
+      </div>
+    </header>
+    <div class="dashboard-body">
+      <div class="dashboard-toolbar">
+        <h2 class="section-title">我的班级</h2>
+        <button class="btn-primary" id="btn-create-class">＋ 创建班级</button>
+      </div>
+      <div id="classes-grid" class="classes-grid"></div>
+    </div>
+  </section>
+  <section id="page-class" class="page">
+    <div class="class-nav-oval">
+      <header class="class-header">
+        <div class="ch-left">
+          <button class="ch-back-btn" id="btn-back-dashboard" title="返回班级列表">◀</button>
+          <div class="ch-avatar">🐾</div>
+          <div class="ch-info">
+            <span class="ch-cls-name class-page-name"></span>
+            <span class="ch-cls-grade class-page-grade"></span>
+          </div>
+        </div>
+        <div class="ch-center">
+          <label class="ch-search-wrap">
+            <span class="ch-si">🔍</span>
+            <input id="ch-search" class="ch-search-input" placeholder="搜索学生...">
+          </label>
+          <button class="ch-density-btn" id="btn-toggle-density" title="切换视图密度 (三列/四列)">
+            <span class="density-icon">📱</span>
+          </button>
+        </div>
+        <div class="ch-right">
+          <button class="ch-rbtn" id="nav-homework-stats-btn">📊 作业统计</button>
+          <button class="ch-rbtn" id="nav-tug-of-war-btn">🎯 科目拔河</button>
+          <button class="ch-rbtn" id="nav-shout-btn">📢 隔空喊话</button>
+          <button class="ch-rbtn ch-rbtn-mob-hide" id="nav-group-rank-btn">👥 小组榜</button>
+          <button class="ch-rbtn ch-rbtn-honor ch-rbtn-mob-hide" id="nav-honor-btn">🏆 光荣榜</button>
+          <button class="ch-rbtn ch-rbtn-mob-hide" id="nav-shop-btn">🛒 小卖部</button>
+          <button class="ch-rbtn ch-rbtn-undo ch-rbtn-mob-hide" id="nav-undo-btn">↩ 撤回上一步</button>
+          <button class="ch-rbtn ch-rbtn-settings ch-rbtn-mob-hide" id="nav-settings-btn">⚙️ 老师设置 ▾</button>
+        </div>
+      </header>
+    </div>
+    <div class="mob-bottom-bar" id="mob-bottom-bar">
+      <button class="mob-bb-btn mob-bb-honor" data-mob-action="honor"><span class="mob-bb-icon">🏆</span><span class="mob-bb-label">光荣榜</span></button>
+      <button class="mob-bb-btn" data-mob-action="shop"><span class="mob-bb-icon">🛒</span><span class="mob-bb-label">小卖部</span></button>
+      <button class="mob-bb-btn" data-mob-action="undo"><span class="mob-bb-icon">↩</span><span class="mob-bb-label">撤回</span></button>
+      <button class="mob-bb-btn mob-bb-settings" data-mob-action="settings"><span class="mob-bb-icon">⚙️</span><span class="mob-bb-label">老师设置</span></button>
+    </div>
+    <div id="class-tabs" class="class-tabs" style="display:none">
+      <button class="tab-btn active" data-tab="students">学生列表</button>
+      <button class="tab-btn" data-tab="groups">小组管理</button>
+      <button class="tab-btn" data-tab="records">积分记录</button>
+      <button class="tab-btn" data-tab="shop">小卖部</button>
+    </div>
+    <div class="class-content">
+      <div id="tab-students" class="tab-content active">
+        <div class="gfbar gfbar-in-cards" id="group-filter-bar"></div>
+        <div class="mob-action-bar">
+          <button class="mob-action-btn" id="mob-shout-btn"><i class="ri-megaphone-line"></i> <span>隔空喊话</span></button>
+          <button class="mob-action-btn" id="mob-batch-btn"><i class="ri-menu-2-line"></i> <span>批量操作</span></button>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="filter-name" class="filter-input" placeholder="🔍 搜索姓名或宠物">
+          <select id="filter-pet" class="filter-select"><option value="">全部宠物</option></select>
+          <select id="filter-group" class="filter-select"><option value="">全部小组</option></select>
+          <div class="filter-score">
+            <input type="number" id="filter-score-min" class="filter-input-sm" placeholder="最低积分">
+            <span>-</span>
+            <input type="number" id="filter-score-max" class="filter-input-sm" placeholder="最高积分">
+          </div>
+          <button class="btn-sm btn-ghost" id="btn-filter-reset">重置</button>
+        </div>
+        <div class="batch-bar" id="batch-bar">
+          <div class="batch-expanded">
+            <button class="btn-sm batch-select-btn" id="btn-select-all">☑ 全选</button>
+            <span id="batch-count" class="batch-count-label">请点选学生</span>
+            <div class="batch-divider"></div>
+            <button class="btn-sm btn-success" id="batch-add-score" disabled>➕ 加分</button>
+            <button class="btn-sm btn-danger" id="batch-deduct-score" disabled>➖ 扣分</button>
+            <div class="batch-divider"></div>
+            <button class="btn-sm btn-ghost" id="batch-cancel">✖ 取消批量</button>
+          </div>
+        </div>
+        <div id="students-grid" class="students-grid"></div>
+      </div>
+      <div id="tab-groups" class="tab-content">
+        <div class="tab-toolbar"><h3>小组管理</h3><button class="btn-primary btn-sm" id="btn-create-group">＋ 创建小组</button></div>
+        <div id="groups-list" class="groups-list"></div>
+      </div>
+      <div id="tab-records" class="tab-content">
+        <div class="tab-toolbar">
+          <h3>积分记录</h3>
+          <div class="records-filters">
+            <select id="records-filter-type" class="filter-select"><option value="">全部类型</option><option value="add">加分</option><option value="deduct">扣分</option><option value="redeem">兑换</option></select>
+            <select id="records-filter-mode" class="filter-select"><option value="student">👥 按学生分组</option><option value="time">🕒 按时间倒序</option></select>
+            <select id="records-filter-student" class="filter-select"><option value="">全部学生</option></select>
+            <button type="button" class="btn-ghost btn-sm" id="btn-records-export">📤 导出</button>
+          </div>
+        </div>
+        <div id="records-list" class="records-list"></div>
+      </div>
+      <div id="tab-shop" class="tab-content">
+        <div class="tab-toolbar">
+          <h3>小卖部</h3>
+          <div class="shop-toolbar-actions">
+            <button class="btn-ghost btn-sm" id="btn-shop-redeem-records">📋 兑换记录</button>
+            <button class="btn-primary btn-sm" id="btn-create-shop-item">＋ 添加商品</button>
+          </div>
+        </div>
+        <div id="shop-grid" class="shop-grid"></div>
+      </div>
+    </div>
+    <button type="button" class="class-share-fab" id="class-share-fab" title="分享给家长（全班宠物概览）" aria-label="分享全班概览">🔗 分享家长</button>
+  </section>
+  <div id="modal-overlay" class="modal-overlay">
+    <div id="modal-box" class="modal-box">
+      <div class="modal-header"><h3 id="modal-title">标题</h3><button class="modal-close" id="modal-close">✕</button></div>
+      <div class="modal-body" class="modal-body"></div>
+      <div class="modal-footer" class="modal-footer"></div>
+    </div>
+  </div>
+  <div id="big-screen" class="fullscreen-overlay">
+    <div class="bs-header">
+      <div class="bs-title-wrap"><span class="bs-logo">🐾</span><h1 id="bs-class-name" class="bs-class-name">班级名称</h1></div>
+      <div class="bs-stats" id="bs-stats"></div>
+      <button class="bs-close" id="bs-close">✕ 退出大屏</button>
+    </div>
+    <div id="bs-podium" class="bs-podium"></div>
+    <div id="bs-cards" class="bs-cards"></div>
+  </div>
+  <div id="roll-call" class="fullscreen-overlay rc-overlay">
+    <div class="rc-content">
+      <h2 class="rc-title">🎲 随机点名</h2>
+      <div class="rc-drum" id="rc-drum">
+        <div class="rc-pet-wrap" id="rc-pet-wrap">
+          <img id="rc-pet-img" src="" alt="" class="rc-pet-img">
+          <div id="rc-name" class="rc-name">???</div>
+        </div>
+      </div>
+      <div class="rc-count-row" style="display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.75rem">
+        <span style="color:rgba(255,255,255,.7);font-size:.9rem">点名人数</span>
+        <button type="button" id="rc-count-minus" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1">−</button>
+        <span id="rc-count-val" style="color:#fff;font-size:1.1rem;font-weight:700;min-width:1.5rem;text-align:center">1</span>
+        <button type="button" id="rc-count-plus" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1">+</button>
+      </div>
+      <div class="rc-actions">
+        <button class="btn-primary btn-lg" id="rc-start">开始抽取</button>
+        <button class="btn-ghost btn-lg" id="rc-close">关 闭</button>
+      </div>
+      <div id="rc-result" class="rc-result"></div>
+      <div id="rc-winners" class="rc-winners"></div>
+    </div>
+  </div>
+  <div id="remote-score" class="fullscreen-overlay rs-overlay">
+    <div class="rs-content">
+      <div class="rs-header">
+        <div class="rs-header-left"><h2>🎮 遥控加分</h2><span class="rs-header-hint">点击学生加入待操作列表，再点击「确认加分」提交</span></div>
+        <button class="btn-ghost" id="rs-close">✕ 关闭</button>
+      </div>
+      <div class="rs-body">
+        <div class="rs-left">
+          <label class="rs-search-wrap"><i class="ri ri-search-line" style="font-size:1rem;opacity:.6"></i><input type="text" id="rs-student-search" class="rs-search-input" placeholder="搜索学生姓名或宠物"></label>
+          <p class="rs-hint">点击学生卡片 → 加入待操作</p>
+          <div id="rs-student-list" class="rs-student-list"></div>
+        </div>
+        <div class="rs-right">
+          <div class="rs-control">
+            <label>操作值</label>
+            <div id="rs-score-btns-wrap" class="rs-score-btns">
+              <button class="rs-score-btn active" data-v="1">+1</button>
+              <button class="rs-score-btn" data-v="2">+2</button>
+              <button class="rs-score-btn" data-v="3">+3</button>
+              <button class="rs-score-btn" data-v="5">+5</button>
+              <button class="rs-score-btn" data-v="10">+10</button>
+              <button class="rs-score-btn danger" data-v="-1">-1</button>
+              <button class="rs-score-btn danger" data-v="-2">-2</button>
+              <button class="rs-score-btn danger" data-v="-5">-5</button>
+            </div>
+            <div id="rs-custom-wrap" class="form-field" style="margin-bottom:.75rem">
+              <label>自定义值</label>
+              <input type="number" id="rs-custom-val" value="1" class="form-input">
+            </div>
+            <div class="form-field">
+              <label>原因（可选）</label>
+              <input type="text" id="rs-reason" placeholder="请输入加分原因" class="form-input">
+            </div>
+          </div>
+          <div class="rs-pending-box">
+            <div class="rs-pending-header">
+              <span class="rs-pending-title">待操作</span>
+              <span id="rs-pending-count" class="rs-pending-count">0 人</span>
+              <button class="rs-pending-clear" id="rs-pending-clear">清空</button>
+            </div>
+            <div id="rs-pending-list" class="rs-pending-list"><p class="rs-pending-empty">点击左侧学生加入列表</p></div>
+            <button class="rs-confirm-btn" id="rs-confirm-btn" disabled><span class="rs-confirm-icon">✓</span><span id="rs-confirm-text">确认加分</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="lucky-wheel" class="fullscreen-overlay lw-overlay" aria-hidden="true">
+    <div class="lw-content-window">
+      <div class="lw-header-new">
+        <div class="lw-title-new">转盘 <i class="ri-external-link-line" style="font-size:1.1rem;margin-left:8px;cursor:pointer;color:#888;" id="lw-popout-btn" title="在新窗口打开"></i></div>
+        <div id="lw-display-result-new" class="lw-result-placeholder">??</div>
+        <button class="lw-close-new" id="lw-close">✕</button>
+      </div>
+      <div class="lw-wheel-box-new">
+        <canvas id="lw-canvas" width="600" height="600"></canvas>
+        <div id="lw-spin-btn" class="lw-go-btn-new">
+          <div class="lw-pointer-new"></div>
+          <div class="lw-go-inner-new">GO</div>
+        </div>
+      </div>
+      <div class="lw-footer-new">
+        <div class="lw-foot-btn-new" id="lw-settings-btn" title="配置"><i class="ri-settings-3-line"></i></div>
+        <div class="lw-foot-btn-new" id="lw-edit-btn" title="编辑奖励"><i class="ri-edit-box-line"></i></div>
+      </div>
+      <div id="lw-result-wrap" class="lw-result-overlay-new hidden">
+        <div class="lw-result-card-new">
+          <div class="lw-res-label-new">恭喜获得</div>
+          <div id="lw-result-text" class="lw-res-val-new">奖励内容</div>
+          <button id="lw-result-close" class="btn-primary">确 定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="group-rank" class="fullscreen-overlay gr-overlay">
+    <div class="hr-header">
+      <div class="hr-title-wrap"><span class="hr-crown">👥</span><h2 class="hr-title">小组榜</h2></div>
+      <button class="hr-close" id="gr-close">✕ 关闭</button>
+    </div>
+    <div class="hr-subheader">
+      <div class="hr-period-tabs" id="gr-period-tabs" role="tablist">
+        <button type="button" class="hr-tab active" data-gr-period="total">总榜</button>
+        <button type="button" class="hr-tab" data-gr-period="day">日榜</button>
+        <button type="button" class="hr-tab" data-gr-period="week">周榜</button>
+        <button type="button" class="hr-tab" data-gr-period="month">月榜</button>
+      </div>
+      <p class="hr-period-desc" id="gr-period-desc"></p>
+    </div>
+    <div id="gr-list" class="hr-list gr-list"></div>
+  </div>
+  <div id="honor-roll" class="fullscreen-overlay hr-overlay">
+    <div class="hr-header">
+      <div class="hr-title-wrap"><span class="hr-crown">👑</span><h2 class="hr-title">光荣榜</h2></div>
+      <button class="hr-close" id="hr-close">✕ 关闭</button>
+    </div>
+    <div class="hr-subheader">
+      <div class="hr-period-tabs" id="hr-period-tabs" role="tablist" aria-label="排行榜周期">
+        <button class="hr-tab active" data-hr-period="total" role="tab" aria-selected="true">总榜</button>
+        <button class="hr-tab" data-hr-period="day" role="tab" aria-selected="false">日榜</button>
+        <button class="hr-tab" data-hr-period="week" role="tab" aria-selected="false">周榜</button>
+        <button class="hr-tab" data-hr-period="month" role="tab" aria-selected="false">月榜</button>
+      </div>
+      <p class="hr-period-desc" id="hr-period-desc"></p>
+    </div>
+    <div id="hr-list" class="hr-list"></div>
+  </div>
+  <div id="homework-stats" class="fullscreen-overlay hw-overlay">
+    <div class="hw-container">
+      <div class="hw-header">
+        <h2 id="hw-current-task-title">📊 作业统计</h2>
+        <div class="hw-header-actions">
+          <button class="hw-reset-all-btn" id="hw-reset-all-btn">🔄 重置全班学生</button>
+          <button class="hw-task-switch-btn" id="hw-task-switch-btn">🔄 切换任务</button>
+          <button class="hw-close-btn" id="hw-close-btn">✕</button>
+        </div>
+      </div>
+      <div class="hw-task-selector" id="hw-task-selector" style="display: none;">
+        <div class="hw-task-list" id="hw-task-list"></div>
+        <div class="hw-task-actions"><button class="hw-task-add-btn" id="hw-task-add-btn">➕ 添加新任务</button></div>
+      </div>
+      <div class="hw-body">
+        <div class="hw-content">
+          <div class="hw-section hw-incomplete">
+            <div class="hw-section-header">
+              <div class="hw-section-title">📝 未完成 <span class="hw-count-badge" id="hw-incomplete-count">0</span></div>
+              <div class="hw-section-actions">
+                <button class="hw-action-btn hw-penalty-btn" id="hw-penalty-btn">➖ 批量减分</button>
+                <button class="hw-action-btn hw-shuffle-btn" id="hw-shuffle-btn">🔀 随机排序</button>
+              </div>
+            </div>
+            <div class="hw-student-grid" id="hw-incomplete-grid"></div>
+          </div>
+          <div class="hw-section hw-completed">
+            <div class="hw-section-header">
+              <div class="hw-section-title">✅ 已完成 <span class="hw-count-badge" id="hw-completed-count">0</span></div>
+              <button class="hw-action-btn hw-reward-btn" id="hw-reward-btn">⭐ 批量加分</button>
+            </div>
+            <div class="hw-student-grid" id="hw-completed-grid"></div>
+          </div>
+        </div>
+      </div>
+      <div class="hw-footer">
+        <div class="hw-timer-display" id="hw-timer-display">00:00</div>
+        <div class="hw-timer-controls">
+          <button class="hw-timer-btn hw-remove-mode-btn" id="hw-remove-mode-btn">🗑️ 移除学生</button>
+          <button class="hw-timer-btn hw-timer-start" id="hw-timer-start">▶ 开始</button>
+          <button class="hw-timer-btn hw-timer-pause" id="hw-timer-pause">⏸ 暂停</button>
+          <button class="hw-timer-btn hw-timer-reset" id="hw-timer-reset">↺ 重置</button>
+        </div>
+        <div class="hw-remove-hint">💡 点击「移除学生」可移除不参与本次任务的学生</div>
+      </div>
+    </div>
+  </div>
+  <div id="toast-container" class="toast-container"></div>
+  <div id="screen-lock-bar" class="screen-lock-bar" aria-hidden="true">🔒 屏幕已锁定 · 仅可浏览，点击任意位置输入密码解锁</div>
+  <div id="screen-lock-guard" class="screen-lock-guard" aria-hidden="true"></div>
+  <div id="screen-lock-overlay" class="screen-lock-overlay" aria-hidden="true">
+    <div class="screen-lock-card">
+      <button type="button" class="screen-lock-close" id="screen-lock-close-btn" aria-label="关闭">×</button>
+      <div class="screen-lock-icon" aria-hidden="true">🔒</div>
+      <h2 class="screen-lock-title">屏幕已锁定</h2>
+      <p class="screen-lock-sub">请输入锁屏密码解锁</p>
+      <input type="password" id="screen-lock-input" class="screen-lock-input filter-input" placeholder="锁屏密码" autocomplete="off" aria-label="锁屏密码">
+      <button type="button" class="btn-primary screen-lock-unlock-btn" id="screen-lock-unlock-btn">解锁</button>
+      <p class="screen-lock-forgot-hint">忘记锁屏密码？请到<strong>班级列表页右上角</strong>点击「退出登录」后重新登录即可。</p>
+      <button type="button" class="btn-ghost screen-lock-forgot-btn" id="screen-lock-forgot-btn">忘记密码 · 退出登录</button>
+    </div>
+  </div>
+  <script src="js/config.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/realtime-sync.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/screen-lock.js"></script>
+  <script src="js/class-view.js"></script>
+  <script src="js/students.js"></script>
+  <script src="js/groups.js"></script>
+  <script src="js/records.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/audio-challenge.js"></script>
+  <script src="js/announcements.js"></script>
+  <script src="js/lucky-wheel.js"></script>
+  <script>
+    AudioChallenge.init();
+    Announcements.init();
+  </script>
+  <script src="js/app.js"></script>
+</body>
+</html>
