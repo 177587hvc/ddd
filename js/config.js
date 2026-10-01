@@ -1,4 +1,4 @@
-/* ═══════════════════════ CONFIG.JS ═══════════════════════
+﻿/* ═══════════════════════ CONFIG.JS ═══════════════════════
    Pet types, level settings, constants
 ═══════════════════════════════════════════════════════════ */
 
@@ -203,7 +203,7 @@ const SHOP_ICONS_CATEGORIES = {
   entertainment: {
     label: '娱乐',
     icon: 'ri-gamepad-line',
-    icons: ['ri-gamepad-line', 'ri-gamepad-2-line', 'ri-music-line', 'ri-movie-line', 'ri-movie-2-line', 'ri-basketball-line', 'ri-football-line', 'ri-camera-line', 'ri-mic-line', 'ri-headphone-line', 'ri-tv-line', 'ri-remote-control-line', 'ri-run-line', 'ri-swim-line'],
+    icons: ['ri-gamepad-line', 'ri-gamepad-2-line', 'ri-music-line', 'ri-music-2-line', 'ri-movie-line', 'ri-movie-2-line', 'ri-basketball-line', 'ri-football-line', 'ri-camera-line', 'ri-mic-line', 'ri-headphone-line', 'ri-tv-line', 'ri-remote-control-line', 'ri-run-line', 'ri-swim-line'],
   },
   privilege: {
     label: '特权',
@@ -216,7 +216,7 @@ const SHOP_ICONS_CATEGORIES = {
     icons: ['ri-gift-line', 'ri-heart-line', 'ri-star-half-line', 'ri-flag-line', 'ri-palette-line', 'ri-brush-2-line', 'ri-shopping-bag-line', 'ri-shopping-cart-line', 'ri-basket-line', 'ri-24-hours-line', 'ri-home-smile-line', 'ri-plant-line', 'ri-sun-line', 'ri-moon-line', 'ri-apps-line'],
   },
 };
-const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apps-line'];
+const SHOP_ICONS = ['ri-gift-line', 'ri-cake-2-line', 'ri-book-line', 'ri-gamepad-line', 'ri-vip-crown-line', 'ri-star-line', 'ri-heart-line', 'ri-medal-line', 'ri-shopping-bag-line', 'ri-music-line', 'ri-pencil-line', 'ri-apple-line'];
 const SHOP_COLORS = ['#e9d5ff', '#8b5cf6', '#f97316', '#ec4899', '#67e8f9', '#fbbf24', '#86efac', '#f472b6', '#94a3b8', '#ef4444'];
 
 /* Helper: get pet info by type */
@@ -227,7 +227,8 @@ function getPet(type) {
 /* Helper: get pet image path (stage 1-10)
    动物图片/{文件夹}/{1-10}.webp，如 动物图片/白猫十阶段图片/1.webp
    type -> 实际文件夹名，文件夹内需有 1.webp ~ 10.webp */
-const PET_IMG_BASE = './动物图片';
+/* 宠物图片统一走 Bitiful S3 桶（key = {folder}/{stage}.webp） */
+const PET_IMG_BASE = 'https://cxopeeef66.s3.bitiful.net';
 const PET_IMG_FOLDERS = {
   /* 原有动物（中文文件夹名） */
   baimao: '白猫十阶段图片', bixiong: '比熊十阶段图片', bianmu: '边牧十阶段图片',
@@ -377,7 +378,7 @@ function daysSinceLastPetFed(lastFedIso) {
     const d = new Date(lastFedIso);
     const t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     const n = new Date();
-    const t1 = new Date(n.getFullYear(), n.getMonth(), d.getDate()).getTime();
+    const t1 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
     return Math.max(0, Math.floor((t1 - t0) / 86400000));
   } catch(e) {
     return 0;
