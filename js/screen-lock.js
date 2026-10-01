@@ -104,8 +104,15 @@ const ScreenLock = (() => {
     hideUnlockModal();
   }
 
-  function showOverlay() { enterLockMode(); showUnlockModal(); }
-  function hideOverlay() { exitLockMode(); }
+  // 为兼容旧调用保留名称
+  function showOverlay() {
+    enterLockMode();
+    showUnlockModal();
+  }
+
+  function hideOverlay() {
+    exitLockMode();
+  }
 
   function unlockWithPassword(pw) {
     if (!verifyPassword(pw)) {
@@ -127,25 +134,50 @@ const ScreenLock = (() => {
     const closeBtn = document.getElementById('screen-lock-close-btn');
     const guard = document.getElementById('screen-lock-guard');
     const overlay = document.getElementById('screen-lock-overlay');
-    if (unlockBtn) unlockBtn.onclick = () => unlockWithPassword(inp && inp.value ? inp.value.trim() : '');
-    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') unlockWithPassword(inp.value ? inp.value.trim() : ''); });
+    if (unlockBtn) {
+      unlockBtn.onclick = () => unlockWithPassword(inp && inp.value ? inp.value.trim() : '');
+    }
+    if (inp) {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') unlockWithPassword(inp.value ? inp.value.trim() : '');
+      });
+    }
     if (forgotBtn) {
       forgotBtn.onclick = async () => {
         const ok = window.confirm('将退出当前账号并清除锁屏，确定吗？退出后请重新登录。');
         if (!ok) return;
-        clearCredentials(); exitLockMode();
+        clearCredentials();
+        exitLockMode();
         if (typeof Auth !== 'undefined' && Auth.logout) await Auth.logout();
       };
     }
-    if (closeBtn) closeBtn.onclick = () => hideUnlockModal();
-    if (guard) guard.addEventListener('click', () => { if (isActive()) showUnlockModal(); });
-    if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) hideUnlockModal(); });
+    if (closeBtn) {
+      closeBtn.onclick = () => hideUnlockModal();
+    }
+    // 点击拦截层任意位置弹出解锁弹窗
+    if (guard) {
+      guard.addEventListener('click', () => {
+        if (isActive()) showUnlockModal();
+      });
+    }
+    // 点击解锁弹窗背景关闭弹窗（保留在锁定模式）
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hideUnlockModal();
+      });
+    }
   }
 
   function tryShowIfLocked() {
     bindOverlayOnce();
-    if (!hasCredentials()) { setActive(false); return; }
-    if (isActive()) { enterLockMode(); showUnlockModal(); }
+    if (!hasCredentials()) {
+      setActive(false);
+      return;
+    }
+    if (isActive()) {
+      enterLockMode();
+      showUnlockModal();
+    }
   }
 
   function openSetupModal() {
@@ -169,17 +201,40 @@ const ScreenLock = (() => {
     document.getElementById('sl-setup-confirm').onclick = () => {
       const p1 = document.getElementById('sl-setup-pw1').value.trim();
       const p2 = document.getElementById('sl-setup-pw2').value.trim();
-      if (p1.length < 4) { UI.toast('密码至少 4 位', 'warning'); return; }
-      if (p1 !== p2) { UI.toast('两次密码不一致', 'warning'); return; }
-      savePassword(p1); setActive(true); UI.closeModal(); bindOverlayOnce(); enterLockMode(); showUnlockModal();
+      if (p1.length < 4) {
+        UI.toast('密码至少 4 位', 'warning');
+        return;
+      }
+      if (p1 !== p2) {
+        UI.toast('两次密码不一致', 'warning');
+        return;
+      }
+      savePassword(p1);
+      setActive(true);
+      UI.closeModal();
+      bindOverlayOnce();
+      enterLockMode();
+      showUnlockModal();
     };
   }
 
   function requestLock() {
     bindOverlayOnce();
-    if (!hasCredentials()) { openSetupModal(); return; }
-    setActive(true); enterLockMode(); showUnlockModal();
+    if (!hasCredentials()) {
+      openSetupModal();
+      return;
+    }
+    setActive(true);
+    enterLockMode();
+    showUnlockModal();
   }
 
-  return { requestLock, tryShowIfLocked, clearCredentials, hasCredentials, isActive, bindOverlayOnce };
+  return {
+    requestLock,
+    tryShowIfLocked,
+    clearCredentials,
+    hasCredentials,
+    isActive,
+    bindOverlayOnce,
+  };
 })();

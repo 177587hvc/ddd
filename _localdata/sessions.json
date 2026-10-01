@@ -1,0 +1,21 @@
+{
+  "997d08a7b3f511ef930ce6e8fbcadfc62c504c371f72e9aae875e453d6d7b34f": {
+    "username": "teacher",
+    "createdAt": 1790814995133,
+    "data": {
+      "pets_classes": "[]",
+      "pets_students": "[]",
+      "last_write": 1727712000000,
+      "pets_records": "[]"
+    },
+    "version": 2,
+    "updatedAt": "2026-10-01T00:36:35.292Z"
+  },
+  "df1c900f15987f26ee0a9c12ef65d9fcc0d478e43321aa1115648e3d6d0673d7": {
+    "username": "teacher",
+    "createdAt": 1790814995270,
+    "data": {},
+    "version": 1,
+    "updatedAt": "2026-10-01T00:36:35.270Z"
+  }
+}
