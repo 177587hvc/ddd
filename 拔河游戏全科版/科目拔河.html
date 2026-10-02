@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>å­¦ä¹ ææ²³</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <audio id="bgmAudio" src="./assets/audio/bgm.mp3" loop preload="none"></audio>
+    <audio id="correctSound" src="./assets/audio/correct.wav" preload="auto"></audio>
+    <audio id="wrongSound" src="./assets/audio/wrong.wav" preload="auto"></audio>
+    <audio id="pullSound" src="./assets/audio/pull.wav" preload="auto"></audio>
+    <audio id="winSound" src="./assets/audio/win.wav" preload="auto"></audio>
+    <audio id="clickSound" src="./assets/audio/click.wav" preload="auto"></audio>
+
+    <header class="topbar">
+      <button id="fullscreenBtn" class="utility-btn" type="button">å¨å±</button>
+      <label class="subject-select">
+        <span>å­¦ç§</span>
+        <select id="subjectSelect">
+          <option value="ç§å­¦æµè¯é¢.xlsx">ç§å­¦æµè¯</option>
+          <option value="æ°å­¦æµè¯é¢.xlsx">æ°å­¦æµè¯</option>
+          <option value="è±è¯­æµè¯é¢.xlsx">è±è¯­æµè¯</option>
+          <option value="è¯­ææµè¯é¢åº.xlsx">è¯­ææµè¯</option>
+        </select>
+      </label>
+      <div class="title-block">
+        <h1>å­¦ä¹ ææ²³</h1>
+      </div>
+      <div class="top-actions">
+        <label class="target-select">
+          <span>èå©æå</span>
+          <select id="winLimitSelect">
+            <option value="4">4 æ ¼</option>
+            <option value="5">5 æ ¼</option>
+            <option value="6" selected>6 æ ¼</option>
+            <option value="8">8 æ ¼</option>
+          </select>
+        </label>
+        <button id="audioBtn" class="utility-btn" type="button">é³ä¹</button>
+        <button id="bankBtn" class="utility-btn" type="button">é¢åº</button>
+        <button id="resetBtn" class="utility-btn strong" type="button">å¼å§</button>
+      </div>
+    </header>
+
+    <main class="game-layout">
+      <section class="team-panel team-blue" aria-label="èéç­é¢åº">
+        <div class="team-head">
+          <div>
+            <p>Team 1</p>
+            <h2>èé</h2>
+          </div>
+          <strong id="leftCorrect">0</strong>
+        </div>
+        <div class="question-box">
+          <p id="leftMode" class="mode-label">éç¨å­¦ä¹ é¢åº</p>
+          <div id="leftPrompt" class="prompt">åå¤åºé¢</div>
+        </div>
+        <div id="leftOptions" class="options-grid"></div>
+        <p id="leftFeedback" class="feedback">ç¹ä¸­æ­£ç¡®ç­æ¡å°±åå·¦æ</p>
+      </section>
+
+      <section class="arena-panel" aria-label="ææ²³æ¯èµåº">
+        <div class="match-strip">
+          <div>
+            <span>èé</span>
+            <strong id="blueScore">0</strong>
+          </div>
+          <div class="clock">
+            <span>ç¨æ¶</span>
+            <strong id="timer">00:00</strong>
+          </div>
+          <div>
+            <span>çº¢é</span>
+            <strong id="redScore">0</strong>
+          </div>
+        </div>
+
+        <div id="arena" class="arena">
+          <div class="center-line"></div>
+          <div class="ground-shadow"></div>
+          <div class="pull-ruler">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <div id="tugScene" class="tug-scene">
+            <div id="ropeLayer" class="rope-layer">
+              <img src="./assets/images/rope.png" alt="" draggable="false" />
+              <span class="rope-knot"></span>
+              <span class="flag"></span>
+            </div>
+            <div id="blueTeam" class="team-sprite-wrap blue-sprite-wrap">
+              <img class="team-sprite" src="./assets/images/blue-team.png" alt="èéææ²³å°äºº" draggable="false" />
+            </div>
+            <div id="redTeam" class="team-sprite-wrap red-sprite-wrap">
+              <img class="team-sprite" src="./assets/images/red-team.png" alt="çº¢éææ²³å°äºº" draggable="false" />
+            </div>
+          </div>
+
+          <div id="resultBanner" class="result-banner" hidden>
+            <p id="resultText">èéè·è</p>
+            <button id="playAgainBtn" type="button">åæ¥ä¸å±</button>
+          </div>
+        </div>
+
+        <div class="delta-panel">
+          <span>æåå·®</span>
+          <div class="delta-track">
+            <i id="deltaMarker"></i>
+          </div>
+          <strong id="deltaText">0 / 6</strong>
+        </div>
+      </section>
+
+      <section class="team-panel team-red" aria-label="çº¢éç­é¢åº">
+        <div class="team-head">
+          <div>
+            <p>Team 2</p>
+            <h2>çº¢é</h2>
+          </div>
+          <strong id="rightCorrect">0</strong>
+        </div>
+        <div class="question-box">
+          <p id="rightMode" class="mode-label">éç¨å­¦ä¹ é¢åº</p>
+          <div id="rightPrompt" class="prompt">åå¤åºé¢</div>
+        </div>
+        <div id="rightOptions" class="options-grid"></div>
+        <p id="rightFeedback" class="feedback">éäºåªéªçº¢åï¼é¢ç®ä¸å</p>
+      </section>
+    </main>
+
+    <section id="bankModal" class="modal-backdrop" hidden aria-label="é¢åºç®¡ç">
+      <div class="bank-modal">
+        <div class="modal-head">
+          <div>
+            <p>æå¸é¢åºå·¥å·</p>
+            <h2>Excel é¢åºå¯¼å¥</h2>
+          </div>
+          <button id="closeBankBtn" class="icon-close" type="button">Ã</button>
+        </div>
+        <div class="bank-actions three-actions">
+          <button id="templateXlsxBtn" type="button">ä¸è½½é¢ç®æ¨¡æ¿</button>
+          <button id="importBankBtn" class="primary-bank-btn" type="button">å¯¼å¥é¢åº</button>
+          <button id="historyBankBtn" type="button">å¯¼å¥è®°å½</button>
+          <input id="importBankInput" type="file" accept=".xlsx,.xls" hidden />
+        </div>
+        <div class="bank-note">
+          <strong id="bankCount">0 éé¢</strong>
+          <span>æ¨¡æ¿åï¼é¢ç®ãæ­£ç¡®ç­æ¡ãéè¯¯éé¡¹1ãéè¯¯éé¡¹2ãéè¯¯éé¡¹3ãå·¦å³ä¸¤è¾¹ä¼å°½éæ½ä¸åé¢ï¼åå°äºæã</span>
+        </div>
+        <textarea id="bankPreview" spellcheck="false" readonly></textarea>
+      </div>
+    </section>
+
+    <!-- å¯¼å¥åå²è®°å½é¢æ¿ -->
+    <section id="historyModal" class="modal-backdrop" hidden aria-label="å¯¼å¥è®°å½">
+      <div class="bank-modal">
+        <div class="modal-head">
+          <div>
+            <p>æå¸é¢åºå·¥å·</p>
+            <h2>å¯¼å¥é¢ç®è®°å½</h2>
+          </div>
+          <button id="closeHistoryBtn" class="icon-close" type="button">Ã</button>
+        </div>
+        <div class="bank-note">
+          <strong id="historyCount">0 æ¡è®°å½</strong>
+          <span>ç¹å»ãåºç¨ãå¯ç´æ¥å°è¯¥é¢åºè½½å¥æ¸¸æï¼è®°å½æ°¸ä¹ä¿å­ã</span>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </div>
+    </section>
+
+    <!-- èªå®ä¹æç¤ºå¼¹çª -->
+    <div id="customAlert" class="custom-alert" hidden>
+      <div class="alert-content">
+        <p id="alertMessage">æç¤ºä¿¡æ¯</p>
+        <button id="alertBtn" class="alert-btn" type="button">ç¡®å®</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/vendor/xlsx.full.min.js"></script>
+  <script src="./embedded-subjects.js"></script>
+  <script src="./game.js"></script>
+</body>
+</html>
