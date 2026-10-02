@@ -227,8 +227,8 @@ function getPet(type) {
 /* Helper: get pet image path (stage 1-10)
    动物图片/{文件夹}/{1-10}.webp，如 动物图片/白猫十阶段图片/1.webp
    type -> 实际文件夹名，文件夹内需有 1.webp ~ 10.webp */
-/* 宠物图片：神兽走 GitHub 仓库 + jsdelivr CDN（免费），普通动物无图时回退 emoji */
-const PET_IMG_BASE = 'https://cdn.jsdelivr.net/gh/177587hvc/ddd@main/pets';
+/* 宠物图片：同源 Render 服务 pets/ 目录（GitHub 仓库直供，免外部 CDN） */
+const PET_IMG_BASE = '/pets';
 const PET_IMG_FOLDERS = {
   /* 原有动物（中文文件夹名） */
   baimao: '白猫十阶段图片', bixiong: '比熊十阶段图片', bianmu: '边牧十阶段图片',
