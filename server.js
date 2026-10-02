@@ -43,6 +43,10 @@ async function initDB() {
     snapshot TEXT NOT NULL,
     created_at TEXT NOT NULL
   )`);
+  await db.execute(`CREATE TABLE IF NOT EXISTS app_config (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  )`);
 
   // 首次启动：迁移本地旧数据
   const userCount = await db.execute('SELECT COUNT(*) as c FROM users');
@@ -279,6 +283,30 @@ async function handleApi(req, res, action) {
         };
       });
       return sendJSON(res, { ok: true, teachers });
+    }
+
+    case 'getPets': {
+      const r = await db.execute('SELECT value FROM app_config WHERE key = ?', ['pet_types']);
+      let pets = null;
+      if (r.rows[0]) { try { pets = JSON.parse(r.rows[0].value); } catch {} }
+      return sendJSON(res, { ok: true, pets });
+    }
+
+    case 'adminListPets': {
+      const { password } = body;
+      if (password !== (process.env.ADMIN_PASSWORD || 'admin2024')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      const r = await db.execute('SELECT value FROM app_config WHERE key = ?', ['pet_types']);
+      let pets = null;
+      if (r.rows[0]) { try { pets = JSON.parse(r.rows[0].value); } catch {} }
+      return sendJSON(res, { ok: true, pets });
+    }
+
+    case 'adminSavePets': {
+      const { password, pets } = body;
+      if (password !== (process.env.ADMIN_PASSWORD || 'admin2024')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      await db.execute('INSERT OR REPLACE INTO app_config (key, value) VALUES (?, ?)',
+        ['pet_types', JSON.stringify(pets || [])]);
+      return sendJSON(res, { ok: true });
     }
 
     case 'adminSaveTeacher': {

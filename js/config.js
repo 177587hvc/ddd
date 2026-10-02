@@ -2,7 +2,7 @@
    Pet types, level settings, constants
 ═══════════════════════════════════════════════════════════ */
 
-const PET_TYPES = [
+let PET_TYPES = [
   /* 《有兽焉》神兽（本地自用） */
   { type: 'tianlu', name: '天禄', emoji: '🐉' },
   { type: 'bixie', name: '辟邪', emoji: '🐉' },
@@ -513,3 +513,14 @@ window.loadXLSX = function () {
     tryLoad();
   });
 };
+
+/* 后台可配宠物列表：若数据库有覆盖配置则替换内置 PET_TYPES */
+fetch('/backend/api.php?action=getPets')
+  .then(r => r.json())
+  .then(j => {
+    if (j.ok && Array.isArray(j.pets) && j.pets.length) {
+      PET_TYPES.splice(0, PET_TYPES.length, ...j.pets);
+      if (typeof onPetTypesReloaded === 'function') onPetTypesReloaded();
+    }
+  })
+  .catch(() => {});

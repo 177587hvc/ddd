@@ -10,11 +10,12 @@
   .row:hover { background:#1e293b; }
   input,select { background:#334155; border:1px solid #475569; border-radius:6px; padding:4px 8px; color:#fff; font-size:13px; }
   input:focus,select:focus { outline:none; border-color:#8b5cf6; }
+  .tab.active { background:#8b5cf6; }
 </style>
 </head>
 <body class="p-4 md:p-8 max-w-6xl mx-auto">
 <h1 class="text-2xl font-bold mb-1">🐾 班级宠物园 · 后台</h1>
-<p class="text-slate-400 text-sm mb-6">查看与编辑所有老师班级与学生数据</p>
+<p class="text-slate-400 text-sm mb-6">管理老师班级数据与宠物列表</p>
 
 <div id="loginBox" class="bg-slate-800 p-6 rounded-2xl max-w-sm mx-auto mt-12">
   <label class="text-sm text-slate-400">管理员密码</label>
@@ -25,37 +26,64 @@
 </div>
 
 <div id="main" class="hidden">
-  <div class="grid grid-cols-3 gap-3 mb-6">
-    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">老师数</div><div id="tTeachers" class="text-3xl font-bold mt-1">0</div></div>
-    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">学生总数</div><div id="tStudents" class="text-3xl font-bold mt-1">0</div></div>
-    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">最近活跃</div><div id="tActive" class="text-sm mt-2 text-slate-300">-</div></div>
-  </div>
-  <div class="bg-slate-800 rounded-xl overflow-hidden mb-6">
-    <table class="w-full text-sm">
-      <thead><tr class="bg-slate-700 text-left">
-        <th class="p-3">用户名</th><th class="p-3">姓名</th><th class="p-3">学生数</th><th class="p-3">更新时间</th><th class="p-3"></th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <div class="flex gap-2 mb-4">
+    <button class="tab active px-4 py-2 rounded-lg bg-slate-700" onclick="showTab('teachers',this)">👩‍🏫 老师数据</button>
+    <button class="tab px-4 py-2 rounded-lg bg-slate-700" onclick="showTab('pets',this)">🐾 宠物列表</button>
   </div>
 
-  <div id="editor" class="hidden bg-slate-800 rounded-xl p-4">
-    <div class="flex justify-between items-center mb-3">
-      <h2 id="editorTitle" class="text-lg font-bold"></h2>
-      <button onclick="closeEditor()" class="text-slate-400 hover:text-white">关闭 ✕</button>
+  <!-- 老师数据 -->
+  <div id="tab-teachers">
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">老师数</div><div id="tTeachers" class="text-3xl font-bold mt-1">0</div></div>
+      <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">学生总数</div><div id="tStudents" class="text-3xl font-bold mt-1">0</div></div>
+      <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">最近活跃</div><div id="tActive" class="text-sm mt-2 text-slate-300">-</div></div>
     </div>
-    <div class="overflow-x-auto">
+    <div class="bg-slate-800 rounded-xl overflow-hidden mb-6">
       <table class="w-full text-sm">
-        <thead><tr class="text-left text-slate-400">
-          <th class="p-2">姓名</th><th class="p-2">宠物 type</th>
-          <th class="p-2">fedLegs(进度)</th><th class="p-2">chickenLegs(鸡腿)</th><th class="p-2">累计投喂</th><th class="p-2"></th>
+        <thead><tr class="bg-slate-700 text-left">
+          <th class="p-3">用户名</th><th class="p-3">姓名</th><th class="p-3">学生数</th><th class="p-3">更新时间</th><th class="p-3"></th>
         </tr></thead>
-        <tbody id="editorBody"></tbody>
+        <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="mt-4 flex gap-3">
-      <button onclick="saveTeacher()" class="bg-violet-600 hover:bg-violet-500 px-4 py-2 rounded-lg font-bold">保存修改</button>
-      <span id="saveMsg" class="text-sm self-center"></span>
+    <div id="editor" class="hidden bg-slate-800 rounded-xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h2 id="editorTitle" class="text-lg font-bold"></h2>
+        <button onclick="closeEditor()" class="text-slate-400 hover:text-white">关闭 ✕</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-slate-400">
+            <th class="p-2">姓名</th><th class="p-2">宠物 type</th>
+            <th class="p-2">fedLegs</th><th class="p-2">chickenLegs</th><th class="p-2">累计</th><th class="p-2"></th>
+          </tr></thead>
+          <tbody id="editorBody"></tbody>
+        </table>
+      </div>
+      <div class="mt-4 flex gap-3">
+        <button onclick="saveTeacher()" class="bg-violet-600 hover:bg-violet-500 px-4 py-2 rounded-lg font-bold">保存修改</button>
+        <span id="saveMsg" class="text-sm self-center"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 宠物列表 -->
+  <div id="tab-pets" class="hidden">
+    <div class="flex justify-between items-center mb-3">
+      <div class="text-sm text-slate-400">共 <span id="petCount">0</span> 种宠物。改完点"保存宠物列表"。</div>
+      <div class="flex gap-2">
+        <button onclick="addPetRow()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded">+ 新增</button>
+        <button onclick="savePets()" class="bg-violet-600 hover:bg-violet-500 px-4 py-1.5 rounded font-bold">保存宠物列表</button>
+      </div>
+    </div>
+    <div id="petsMsg" class="text-sm mb-2"></div>
+    <div class="bg-slate-800 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr class="bg-slate-700 text-left">
+          <th class="p-2">type（英文id）</th><th class="p-2">显示名</th><th class="p-2">emoji</th><th class="p-2">图片文件夹(留空=type)</th><th class="p-2"></th>
+        </tr></thead>
+        <tbody id="petsBody"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -70,6 +98,79 @@ function pickStudents(raw) {
   return [];
 }
 
+/* 内置默认宠物列表（与 config.js 一致；数据库无覆盖时用此） */
+const DEFAULT_PETS = [
+  {type:'tianlu',name:'天禄',emoji:'🐉'},{type:'bixie',name:'辟邪',emoji:'🐉'},
+  {type:'sibuxiang',name:'四不像',emoji:'🦌'},{type:'tuye',name:'兔爷',emoji:'🐰'},
+  {type:'jinjiao',name:'金角',emoji:'🐹'},{type:'yinjiao',name:'银角',emoji:'🐹'},
+  {type:'baimao',name:'白猫',emoji:'🐱'},{type:'bixiong',name:'比熊',emoji:'🐶'},
+  {type:'bianmu',name:'边牧',emoji:'🐕'},{type:'buou',name:'布偶',emoji:'🐱'},
+  {type:'chaiquan',name:'柴犬',emoji:'🐕'},{type:'fadou',name:'法斗',emoji:'🐶'},
+  {type:'heimao',name:'黑猫',emoji:'🐱'},{type:'huban',name:'虎斑',emoji:'🐱'},
+  {type:'jiafeimao',name:'加菲猫',emoji:'🐱'},{type:'jinjianceng',name:'金渐层',emoji:'🐱'},
+  {type:'jinmao',name:'金毛',emoji:'🐕'},{type:'jumao',name:'橘猫',emoji:'🐱'},
+  {type:'keji',name:'柯基',emoji:'🐕'},{type:'labuduo',name:'拉布拉多',emoji:'🐕'},
+  {type:'lanmao',name:'蓝猫',emoji:'🐱'},{type:'samoyed',name:'萨摩耶',emoji:'🐕'},
+  {type:'sanhua',name:'三花',emoji:'🐱'},{type:'taidi',name:'泰迪',emoji:'🐩'},
+  {type:'xianluomao',name:'暹罗猫',emoji:'🐱'},{type:'yinjianceng',name:'银渐层',emoji:'🐱'},
+  {type:'xiaotuzi',name:'小兔子',emoji:'🐰'},{type:'songshu',name:'松鼠',emoji:'🐿️'},
+  {type:'xiongmao',name:'熊猫',emoji:'🐼'},{type:'dabaixiong',name:'大白熊',emoji:'🐕'},
+  {type:'houzi',name:'猴子',emoji:'🐒'},{type:'xiaozhuzai',name:'小猪仔',emoji:'🐷'},
+  {type:'yazi',name:'鸭子',emoji:'🦆'},{type:'lihuamao',name:'狸花猫',emoji:'🐱'},
+  {type:'jiuweihu',name:'九尾狐',emoji:'🦊'},{type:'kapibala',name:'卡皮巴拉',emoji:'🦫'},
+  {type:'xueruina',name:'雪瑞纳',emoji:'🐩'},{type:'xiaoyanggao',name:'小羊羔',emoji:'🐑'},
+  {type:'ma',name:'马',emoji:'🐴'},{type:'qie',name:'企鹅',emoji:'🐧'},
+  {type:'laohu',name:'老虎',emoji:'🐯'},{type:'baozi',name:'豹子',emoji:'🐆'},
+  {type:'xigaodi',name:'西高地',emoji:'🐕'},{type:'konglong',name:'恐龙',emoji:'🦕'},
+  {type:'xiaohuangji',name:'小黄鸡',emoji:'🐤'},{type:'yingwu',name:'鹦鹉',emoji:'🦜'},
+  {type:'cangshu',name:'仓鼠',emoji:'🐹'},{type:'meihualu',name:'梅花鹿',emoji:'🦌'},
+  {type:'zhonghuatianyuanquan',name:'中华田园犬',emoji:'🐕'},{type:'daxiang',name:'大象',emoji:'🐘'},
+  {type:'jiwawa',name:'吉娃娃',emoji:'🐕'},{type:'qingwa',name:'青蛙',emoji:'🐸'},
+  {type:'wugui',name:'乌龟',emoji:'🐢'},{type:'huli',name:'狐狸',emoji:'🦊'},
+  {type:'eyu',name:'鳄鱼',emoji:'🐊'},{type:'bianselong',name:'变色龙',emoji:'🦎'},
+  {type:'unicorn',name:'独角兽',emoji:'🦄'},{type:'fairy_dragon',name:'仙龙',emoji:'🐉'},
+  {type:'starry_cat',name:'星空猫',emoji:'🐱'},{type:'moon_rabbit',name:'月兔',emoji:'🐰'},
+  {type:'pegasus',name:'天马',emoji:'🐴'},{type:'nine_deer',name:'九色鹿',emoji:'🦌'},
+  {type:'snow_fox',name:'雪狐',emoji:'🦊'},{type:'mermaid',name:'美人鱼',emoji:'🧜‍♀️'},
+  {type:'flower_spirit',name:'花精灵',emoji:'🌸'},{type:'candy_bear',name:'糖果熊',emoji:'🐻'},
+  {type:'gem_bird',name:'宝石鸟',emoji:'🐦'},{type:'clover_dragon',name:'四叶龙',emoji:'🐉'},
+  {type:'jellyfish',name:'水母',emoji:'🪼'},{type:'aurora_elk',name:'极光麋鹿',emoji:'🦌'},
+  {type:'dessert_fox',name:'甜点狐',emoji:'🦊'},{type:'trex',name:'霸王龙',emoji:'🦖'},
+  {type:'thunder_wolf',name:'雷狼',emoji:'🐺'},{type:'mecha_dragon',name:'机甲龙',emoji:'🐉'},
+  {type:'flame_lion',name:'火焰狮',emoji:'🦁'},{type:'shadow_leopard',name:'暗影豹',emoji:'🐆'},
+  {type:'cerberus',name:'地狱犬',emoji:'🐕'},{type:'griffin',name:'狮鹫',emoji:'🦅'},
+  {type:'mecha_shark',name:'机甲鲨',emoji:'🦈'},{type:'rock_tortoise',name:'岩石龟',emoji:'🐢'},
+  {type:'saber_tooth',name:'剑齿虎',emoji:'🐯'},{type:'lava_golem',name:'熔岩巨人',emoji:'🪨'},
+  {type:'mecha_beetle',name:'机甲甲虫',emoji:'🪲'},{type:'ghost_dragon',name:'幽灵龙',emoji:'🐉'},
+  {type:'ice_mammoth',name:'冰猛犸',emoji:'🦣'},{type:'kungfu_panda',name:'功夫熊猫',emoji:'🐼'},
+  {type:'cotton_dog',name:'棉花狗',emoji:'🐕'},{type:'bubble_hamster',name:'泡泡仓鼠',emoji:'🐹'},
+  {type:'cloud_swan',name:'云天鹅',emoji:'🦢'},{type:'fire_eagle',name:'火焰鹰',emoji:'🦅'},
+  {type:'iron_croc',name:'铁鳄',emoji:'🐊'},{type:'nebula_otter',name:'星云水獭',emoji:'🦫'},
+  {type:'galaxy_whale',name:'银河鲸',emoji:'🐋'},{type:'qilin',name:'麒麟',emoji:'🦌'},
+  {type:'taotie',name:'饕餮',emoji:'🐉'},{type:'lunar_owl',name:'月枭',emoji:'🦉'},
+  {type:'void_frog',name:'虚空蛙',emoji:'🐸'},{type:'aurora_dolphin',name:'极光海豚',emoji:'🐬'},
+  {type:'pulsar_hummingbird',name:'脉冲蜂鸟',emoji:'🐦'},{type:'saturn_octopus',name:'土星章鱼',emoji:'🐙'},
+  {type:'comet_squirrel',name:'彗星松鼠',emoji:'🐿️'},{type:'dark_scorpion',name:'暗蝎',emoji:'🦂'},
+  {type:'supernova_peacock',name:'超新星孔雀',emoji:'🦚'},{type:'meteor_hedgehog',name:'流星刺猬',emoji:'🦔'},
+  {type:'quantum_chameleon',name:'量子变色龙',emoji:'🦎'},{type:'corona_mantis',name:'日冕螳螂',emoji:'🦗'},
+  {type:'stardust_firefly',name:'星尘萤火虫',emoji:'✨'},{type:'wormhole_pangolin',name:'虫洞穿山甲',emoji:'🦔'},
+  {type:'baize',name:'白泽',emoji:'🦌'},{type:'kunpeng',name:'鲲鹏',emoji:'🐦'},
+  {type:'ninetail_fox',name:'九尾狐',emoji:'🦊'},{type:'pixiu',name:'貔貅',emoji:'🐉'},
+  {type:'azure_luan',name:'青鸾',emoji:'🐦'},{type:'yinglong',name:'应龙',emoji:'🐉'},
+  {type:'dangkang',name:'当康',emoji:'🐗'},{type:'bifang',name:'毕方',emoji:'🐦'},
+  {type:'hundun',name:'混沌',emoji:'🐉'},{type:'yingzhao',name:'英招',emoji:'🐴'},
+  {type:'luwu',name:'陆吾',emoji:'🐯'},{type:'dijiang',name:'帝江',emoji:'🐦'},
+  {type:'baixi',name:'白犀',emoji:'🦏'},{type:'jiliang',name:'吉量',emoji:'🐴'}
+];
+let petList = [];
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-teachers').classList.toggle('hidden', name !== 'teachers');
+  document.getElementById('tab-pets').classList.toggle('hidden', name !== 'pets');
+}
+
 async function login() {
   PW = document.getElementById('pw').value;
   document.getElementById('err').textContent = '';
@@ -82,11 +183,12 @@ async function login() {
     if (!j.ok) { document.getElementById('err').textContent = j.msg || '登录失败'; return; }
     document.getElementById('loginBox').classList.add('hidden');
     document.getElementById('main').classList.remove('hidden');
-    render(j.teachers);
+    renderTeachers(j.teachers);
+    loadPets();
   } catch (e) { document.getElementById('err').textContent = '网络错误: ' + e.message; }
 }
 
-function render(ts) {
+function renderTeachers(ts) {
   document.getElementById('tTeachers').textContent = ts.length;
   let total = 0, last = 0;
   const tb = document.getElementById('tbody'); tb.innerHTML = '';
@@ -109,9 +211,7 @@ function render(ts) {
   document.getElementById('tActive').textContent = last ? last.toLocaleString('zh-CN') : '-';
 }
 
-let editingUser = null;
 function openEditor(un) {
-  editingUser = un;
   const t = window['d_' + un];
   document.getElementById('editorTitle').textContent = '编辑：' + un + '（' + (t.name || '') + '）';
   const students = pickStudents(t.raw);
@@ -122,27 +222,23 @@ function openEditor(un) {
     tr.innerHTML =
       '<td class="p-2"><input data-i="' + i + '" data-k="name" value="' + (s.name || '').replace(/"/g, '&quot;') + '"></td>' +
       '<td class="p-2"><input data-i="' + i + '" data-k="petType" value="' + (s.petType || '') + '" placeholder="留空=无宠" style="width:130px"></td>' +
-      '<td class="p-2"><input data-i="' + i + '" data-k="fedLegs" type="number" value="' + (s.fedLegs || 0) + '" style="width:90px"></td>' +
-      '<td class="p-2"><input data-i="' + i + '" data-k="chickenLegs" type="number" value="' + (s.chickenLegs || 0) + '" style="width:90px"></td>' +
-      '<td class="p-2"><input data-i="' + i + '" data-k="cumulativeFedLegs" type="number" value="' + (s.cumulativeFedLegs || 0) + '" style="width:100px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="fedLegs" type="number" value="' + (s.fedLegs || 0) + '" style="width:80px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="chickenLegs" type="number" value="' + (s.chickenLegs || 0) + '" style="width:80px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="cumulativeFedLegs" type="number" value="' + (s.cumulativeFedLegs || 0) + '" style="width:90px"></td>' +
       '<td class="p-2 text-right"><button class="text-red-400 hover:underline" onclick="delRow(this)">删除</button></td>';
     eb.appendChild(tr);
   });
+  window.editingUser = un;
   document.getElementById('editor').classList.remove('hidden');
   document.getElementById('saveMsg').textContent = '';
   document.getElementById('editor').scrollIntoView({ behavior: 'smooth' });
 }
-
 function delRow(btn) { btn.closest('tr').remove(); }
-
-function closeEditor() {
-  document.getElementById('editor').classList.add('hidden');
-  editingUser = null;
-}
+function closeEditor() { document.getElementById('editor').classList.add('hidden'); window.editingUser = null; }
 
 async function saveTeacher() {
-  if (!editingUser) return;
-  const t = window['d_' + editingUser];
+  if (!window.editingUser) return;
+  const t = window['d_' + window.editingUser];
   const raw = t.raw;
   const key = ['students', 'children', 'petStudents', 'pets', 'classStudents'].find(k => Array.isArray(raw[k]));
   const rows = document.querySelectorAll('#editorBody tr');
@@ -156,25 +252,74 @@ async function saveTeacher() {
       else if (k === 'petType') o[k] = inp.value || null;
       else o[k] = Number(inp.value) || 0;
     });
-    // 保留原 id
     const i = Number(ins[0].dataset.i);
-    if (t.raw[key][i] && t.raw[key][i].id) o.id = t.raw[key][i].id;
+    if (raw[key][i] && raw[key][i].id) o.id = raw[key][i].id;
     students.push(o);
   });
   raw[key] = students;
   try {
     const r = await fetch('/backend/api.php?action=adminSaveTeacher', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: PW, username: editingUser, data: raw })
+      body: JSON.stringify({ password: PW, username: window.editingUser, data: raw })
     });
     const j = await r.json();
-    if (j.ok) {
-      document.getElementById('saveMsg').textContent = '✓ 已保存 ' + new Date().toLocaleTimeString();
-      t.raw = raw;
-    } else {
-      document.getElementById('saveMsg').textContent = '✗ ' + (j.msg || '失败');
-    }
+    document.getElementById('saveMsg').textContent = j.ok ? '✓ 已保存 ' + new Date().toLocaleTimeString() : '✗ ' + (j.msg || '失败');
+    if (j.ok) t.raw = raw;
   } catch (e) { document.getElementById('saveMsg').textContent = '✗ 网络错误'; }
+}
+
+async function loadPets() {
+  try {
+    const r = await fetch('/backend/api.php?action=adminListPets', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: PW })
+    });
+    const j = await r.json();
+    petList = (j.ok && Array.isArray(j.pets) && j.pets.length) ? j.pets : DEFAULT_PETS.slice();
+    renderPets();
+  } catch (e) { petList = DEFAULT_PETS.slice(); renderPets(); }
+}
+
+function renderPets() {
+  const pb = document.getElementById('petsBody'); pb.innerHTML = '';
+  document.getElementById('petCount').textContent = petList.length;
+  petList.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-t border-slate-700';
+    tr.innerHTML =
+      '<td class="p-2"><input data-i="' + i + '" data-k="type" value="' + (p.type || '') + '" style="width:140px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="name" value="' + (p.name || '') + '"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="emoji" value="' + (p.emoji || '') + '" style="width:60px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="folder" value="' + (p.folder || '') + '" placeholder="留空=type" style="width:160px"></td>' +
+      '<td class="p-2 text-right"><button class="text-red-400 hover:underline" onclick="delRow(this)">删</button></td>';
+    pb.appendChild(tr);
+  });
+}
+
+function addPetRow() {
+  petList.push({ type: '', name: '', emoji: '🐾', folder: '' });
+  renderPets();
+}
+
+async function savePets() {
+  const rows = document.querySelectorAll('#petsBody tr');
+  const list = [];
+  rows.forEach(tr => {
+    const ins = tr.querySelectorAll('input');
+    const o = {};
+    ins.forEach(inp => { o[inp.dataset.k] = inp.value; });
+    if (o.type) list.push({ type: o.type, name: o.name || o.type, emoji: o.emoji || '🐾', folder: o.folder || undefined });
+  });
+  petList = list;
+  try {
+    const r = await fetch('/backend/api.php?action=adminSavePets', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: PW, pets: list })
+    });
+    const j = await r.json();
+    document.getElementById('petsMsg').textContent = j.ok ? '✓ 已保存 ' + list.length + ' 种，主站刷新生效' : '✗ ' + (j.msg || '失败');
+    renderPets();
+  } catch (e) { document.getElementById('petsMsg').textContent = '✗ 网络错误'; }
 }
 
 document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
