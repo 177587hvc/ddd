@@ -128,6 +128,14 @@ const PET_TYPES = [
   { type: 'dijiang', name: '帝江', emoji: '🐦' },
   { type: 'baixi', name: '白犀', emoji: '🦏' },
   { type: 'jiliang', name: '吉量', emoji: '🐴' },
+  /* 用户追加的梗图宠物 */
+  { type: 'warrior_hamster', name: '仓鼠战士', emoji: '🐹' },
+  { type: 'mihaiyou', name: '米哈油', emoji: '🟣' },
+  { type: 'orange_cows', name: '一车牛', emoji: '🐂' },
+  { type: 'nailong', name: '奶龙', emoji: '🐲' },
+  { type: 'penguin_girl', name: '企鹅装', emoji: '🐧' },
+  { type: 'laughing_dog', name: '笑天犬', emoji: '🐶' },
+  { type: 'yellow_dog', name: '黄狗母子', emoji: '🐕' },
 ];
 
 /* Default level configuration (10 levels 满级).
