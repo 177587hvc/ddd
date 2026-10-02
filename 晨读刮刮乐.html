@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>æ¨è¯»å®å®ä¹ - ç»æèå°ç</title>
+    <title>晨读刮刮乐 - 终极舞台版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* å¨å±å­ä½ä¸åºç¡é²éä¸­ */
+        /* 全局字体与基础防选中 */
         body { margin: 0; overflow: hidden; background-color: #020617; color: #f8fafc; user-select: none; font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; }
         
-        /* ç«é·çæ·±ç©ºéè¹å¨æèæ¯ */
+        /* 炫酷的深空霓虹动态背景 */
         .bg-gradient-custom {
             background: linear-gradient(-45deg, #020617, #1e1b4b, #0f172a, #312e81);
             background-size: 400% 400%;
@@ -21,26 +21,26 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* èå°åæç¹ç¼ */
+        /* 舞台光效点缀 */
         .stage-lights { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1; }
         .light-beam { position: absolute; top: -50%; width: 150px; height: 200%; background: linear-gradient(to bottom, rgba(56, 189, 248, 0.2) 0%, transparent 100%); transform-origin: top center; filter: blur(30px); }
         .light-beam:nth-child(1) { left: 20%; transform: rotate(15deg); animation: sway 8s infinite alternate ease-in-out; }
         .light-beam:nth-child(2) { right: 20%; background: linear-gradient(to bottom, rgba(167, 139, 250, 0.2) 0%, transparent 100%); transform: rotate(-15deg); animation: sway 10s infinite alternate-reverse ease-in-out; }
         @keyframes sway { 0% { transform: rotate(10deg); } 100% { transform: rotate(25deg); } }
 
-        /* ç»å¸é´å½± */
+        /* 画布阴影 */
         #mainCanvas { filter: drop-shadow(0 0 50px rgba(56, 189, 248, 0.3)); }
         
-        /* ç«é·æ»å */
+        /* 炫酷滑块 */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #0ea5e9; cursor: pointer; margin-top: -8px; box-shadow: 0 0 15px #0ea5e9, inset 0 0 5px white; border: 2px solid #fff; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #334155; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* èµåç»çé¢æ¿ */
+        /* 赛博玻璃面板 */
         .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
 
-        /* å¨ç» */
+        /* 动画 */
         .fade-in { animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .bounce-soft { animation: bounceSoft 3s infinite ease-in-out; }
@@ -48,7 +48,7 @@
         .pulse-glow { animation: pulseGlow 2s infinite alternate; }
         @keyframes pulseGlow { from { text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); } to { text-shadow: 0 0 30px rgba(56, 189, 248, 1), 0 0 10px #fff; } }
         
-        /* æ»å¨æ¡ */
+        /* 滚动条 */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
@@ -57,15 +57,15 @@
 </head>
 <body class="w-screen h-screen bg-gradient-custom relative">
 
-    <!-- å¨æç²å­æç©ºå± (æåºå±) -->
+    <!-- 动态粒子星空层 (最底层) -->
     <canvas id="bgParticleCanvas" class="absolute inset-0 z-0 pointer-events-none"></canvas>
-    <!-- èå°åæè£é¥° -->
+    <!-- 舞台光效装饰 -->
     <div class="stage-lights">
         <div class="light-beam"></div>
         <div class="light-beam"></div>
     </div>
 
-    <!-- MAIN CANVAS (ä¸»æ¸¸æç»é¢ï¼ç»å¯¹å±ä¸­) -->
+    <!-- MAIN CANVAS (主游戏画面，绝对居中) -->
     <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <canvas id="mainCanvas" class="w-full h-full object-contain"></canvas>
     </div>
@@ -75,24 +75,24 @@
         <div onclick="toggleSettings(true)" class="w-32 h-32 mb-8 text-cyan-400 bounce-soft opacity-90 flex justify-center items-center bg-slate-900/50 rounded-full shadow-[0_0_40px_rgba(34,211,238,0.2)] border border-cyan-500/30 cursor-pointer hover:bg-slate-800/70 hover:scale-110 transition-all pointer-events-auto">
             <svg id="emptyStateIcon" class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
         </div>
-        <h1 id="emptyStateText" class="text-3xl md:text-4xl font-bold tracking-widest text-slate-300 drop-shadow-lg text-center">è¯·ç¹å»ä¸æ¹æé®è®¾ç½®å®å¼çå¥å±åå®¹ä»¥åæé</h1>
+        <h1 id="emptyStateText" class="text-3xl md:text-4xl font-bold tracking-widest text-slate-300 drop-shadow-lg text-center">请点击上方按钮设置刮开的奖励内容以及权重</h1>
     </div>
 
-    <!-- DRAW TICKET OVERLAY (å®å®ä¹æ½åçé¢) -->
+    <!-- DRAW TICKET OVERLAY (刮刮乐抽取界面) -->
     <div id="drawOverlay" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-black/70 backdrop-blur-md fade-in">
         <h2 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-amber-500 mb-16 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)] bounce-soft text-center w-full">
-            ð¥ å¤§å£°æè¯» å®å¼ä½ ä»¬æ³è¦çå¥å±å§ï¼ ð¥
+            🔥 大声朗读 刮开你们想要的奖励吧！ 🔥
         </h2>
         <button onclick="executeDraw()" class="group relative px-16 py-8 bg-gradient-to-b from-amber-400 to-orange-600 rounded-[3rem] shadow-[0_0_50px_rgba(245,158,11,0.6)] hover:shadow-[0_0_80px_rgba(245,158,11,0.8)] transition-all transform hover:scale-105 cursor-pointer border-4 border-yellow-200">
             <div class="absolute inset-0 rounded-[3rem] bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <span class="relative z-10 text-5xl font-black text-white tracking-widest drop-shadow-md">ð ç¹å»å¼å§æè¯»å®å®ä¹ ð</span>
+            <span class="relative z-10 text-5xl font-black text-white tracking-widest drop-shadow-md">👉 点击开始朗读刮刮乐 👈</span>
         </button>
     </div>
 
     <!-- TOP HUD (Progress) -->
     <div id="topHud" class="hidden absolute top-8 left-0 right-0 w-full flex-col items-center justify-start gap-5 z-30 fade-in pointer-events-none">
         <h1 class="text-3xl md:text-5xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 pulse-glow text-center w-full">
-            èå¸æ¸©é¦¨æç¤ºï¼æè¯»å£°è¶å¤§å®çå°±è¶å¿«å¦ï¼
+            老师温馨提示：朗读声越大刮的就越快呦！
         </h1>
         <div class="w-3/4 max-w-4xl h-10 bg-slate-900/80 backdrop-blur-md rounded-full border-2 border-slate-600 shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden relative">
             <div id="progressBar" class="h-full bg-gradient-to-r from-green-500 via-emerald-400 to-cyan-400 transition-none flex items-center justify-end pr-4 w-0 shadow-[0_0_20px_rgba(52,211,116,0.6)] relative">
@@ -116,21 +116,21 @@
         </div>
     </div>
 
-    <!-- SUCCESS OVERLAY (ç»ç®çé¢ï¼åéæä¸æ¡åé¢çº¸æ¡) -->
+    <!-- SUCCESS OVERLAY (结算界面，半透明不挡后面纸条) -->
     <div id="successOverlay" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm fade-in px-4 overflow-y-auto">
         <div class="transform scale-90 flex flex-col items-center">
         <div class="relative bounce-soft mb-4 sm:mb-8">
             <div class="absolute inset-0 bg-yellow-400 blur-[60px] opacity-60 rounded-full"></div>
             <svg class="relative w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         </div>
-        <h2 class="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600 mb-6 sm:mb-8 md:mb-10 drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)] text-center w-full px-4">ð è§£éå¤§æå ð</h2>
+        <h2 class="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600 mb-6 sm:mb-8 md:mb-10 drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)] text-center w-full px-4">🎉 解锁大成功 🎉</h2>
         
         <div class="px-6 sm:px-10 md:px-16 py-4 sm:py-6 md:py-8 glass-panel border-4 border-yellow-500/50 rounded-2xl sm:rounded-3xl md:rounded-[3rem] flex flex-col items-center transform hover:scale-105 transition-transform shadow-[0_0_50px_rgba(234,179,8,0.2)] max-w-[90vw]">
-            <span id="finalRewardLabel" class="text-yellow-400 text-lg sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 hidden bg-yellow-400/10 px-4 sm:px-6 py-1 sm:py-2 rounded-full border border-yellow-400/30">æç»å¥å±</span>
-            <h3 id="finalRewardText" class="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black tracking-widest text-white text-center drop-shadow-[0_5px_5px_rgba(0,0,0,1)] break-words max-w-full">å¨ç­åä½ä¸</h3>
+            <span id="finalRewardLabel" class="text-yellow-400 text-lg sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 hidden bg-yellow-400/10 px-4 sm:px-6 py-1 sm:py-2 rounded-full border border-yellow-400/30">最终奖励</span>
+            <h3 id="finalRewardText" class="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black tracking-widest text-white text-center drop-shadow-[0_5px_5px_rgba(0,0,0,1)] break-words max-w-full">全班免作业</h3>
         </div>
 
-        <button onclick="resetGame()" class="mt-8 sm:mt-12 md:mt-16 px-8 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-full transition-all shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:shadow-[0_0_50px_rgba(6,182,212,0.8)] hover:-translate-y-1 font-black text-xl sm:text-2xl md:text-3xl cursor-pointer border-2 border-cyan-300 pointer-events-auto">éæ°å¼å§ä¸ä¸å±</button>
+        <button onclick="resetGame()" class="mt-8 sm:mt-12 md:mt-16 px-8 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-full transition-all shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:shadow-[0_0_50px_rgba(6,182,212,0.8)] hover:-translate-y-1 font-black text-xl sm:text-2xl md:text-3xl cursor-pointer border-2 border-cyan-300 pointer-events-auto">重新开始下一局</button>
         </div>
     </div>
 
@@ -142,9 +142,9 @@
     <!-- FULLSCREEN BUTTON -->
     <button id="fullscreenBtn" onclick="toggleFullscreen()" class="absolute top-6 right-6 z-40 p-3 glass-panel rounded-2xl shadow-xl hover:bg-slate-800 hover:shadow-2xl hover:-translate-y-1 transition-all group cursor-pointer text-slate-400 hover:text-cyan-400">
         <svg id="fullscreenIcon" class="w-8 h-8 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <!-- è¿å¥å¨å±å¾æ  -->
+            <!-- 进入全屏图标 -->
             <path id="enterFullscreenPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-            <!-- éåºå¨å±å¾æ ï¼é»è®¤éèï¼ -->
+            <!-- 退出全屏图标（默认隐藏） -->
             <path id="exitFullscreenPath" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M15 9h4.5M15 9V4.5M15 9l5.25-5.25M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"></path>
         </svg>
     </button>
@@ -160,51 +160,51 @@
                 <div class="p-2 bg-cyan-500/20 rounded-xl text-cyan-400 border border-cyan-500/30">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                 </div>
-                <h3 class="text-3xl font-black text-white tracking-wider">æ§å¶ä¸­å¿</h3>
+                <h3 class="text-3xl font-black text-white tracking-wider">控制中心</h3>
             </div>
 
             <div class="overflow-y-auto custom-scroll pr-3 shrink space-y-5">
-                <!-- 0. æ¨¡å¼åæ¢ -->
+                <!-- 0. 模式切换 -->
                 <div class="bg-slate-900/50 p-2 rounded-2xl border border-slate-700 flex gap-2">
-                    <button id="modeBtnImage" onclick="switchMode('image')" class="flex-1 py-3 rounded-xl font-bold text-base transition-all bg-transparent text-slate-400 hover:bg-slate-800 hover:text-white">å®å¾çæ¨¡å¼</button>
-                    <button id="modeBtnTicket" onclick="switchMode('ticket')" class="flex-1 py-3 rounded-xl font-black text-base transition-all bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">å®å®ä¹æ¨¡å¼</button>
+                    <button id="modeBtnImage" onclick="switchMode('image')" class="flex-1 py-3 rounded-xl font-bold text-base transition-all bg-transparent text-slate-400 hover:bg-slate-800 hover:text-white">刮图片模式</button>
+                    <button id="modeBtnTicket" onclick="switchMode('ticket')" class="flex-1 py-3 rounded-xl font-black text-base transition-all bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">刮刮乐模式</button>
                 </div>
 
-                <!-- ä½¿ç¨ç½æ ¼å¸å±ä¼åç©ºé´å©ç¨ -->
+                <!-- 使用网格布局优化空间利用 -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    <!-- å·¦åï¼å¥å±è®¾ç½® -->
+                    <!-- 左列：奖励设置 -->
                     <div class="space-y-5">
-                        <!-- 1. å®å¾çè®¾ç½®åº -->
+                        <!-- 1. 刮图片设置区 -->
                         <div id="setupImage" class="hidden bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
-                            <label class="block text-sm font-black text-slate-300 mb-3 text-center">ð¨ å¯¼å¥ç´ æ (éæPNG)</label>
+                            <label class="block text-sm font-black text-slate-300 mb-3 text-center">🎨 导入素材 (透明PNG)</label>
                             <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-cyan-500/50 bg-cyan-950/30 rounded-xl cursor-pointer hover:bg-cyan-900/40 transition-colors group">
                                 <svg class="w-10 h-10 text-cyan-400 group-hover:scale-110 transition-transform mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                <span id="uploadBtnText" class="text-sm font-bold text-cyan-300">ç¹å»éæ©å¾çæä»¶</span>
+                                <span id="uploadBtnText" class="text-sm font-bold text-cyan-300">点击选择图片文件</span>
                                 <input type="file" accept="image/png" class="hidden" onchange="handleImageUpload(event)" />
                             </label>
                         </div>
 
-                        <!-- 1. å®å®ä¹è®¾ç½®åº -->
+                        <!-- 1. 刮刮乐设置区 -->
                         <div id="setupTicket" class="block bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
                             <div class="flex justify-between items-center mb-4">
-                                <label class="block text-sm font-black text-slate-300">ð å¥æ± ä¸æ¦çåå¸</label>
-                                <button onclick="addReward()" class="text-xs bg-cyan-500/20 hover:bg-cyan-500/40 px-3 py-1.5 rounded-lg text-cyan-300 font-bold transition-colors border border-cyan-500/30">+ æ°å¢å¥å±</button>
+                                <label class="block text-sm font-black text-slate-300">🎁 奖池与概率分布</label>
+                                <button onclick="addReward()" class="text-xs bg-cyan-500/20 hover:bg-cyan-500/40 px-3 py-1.5 rounded-lg text-cyan-300 font-bold transition-colors border border-cyan-500/30">+ 新增奖励</button>
                             </div>
                             <div class="flex gap-2 text-[12px] font-bold text-slate-400 mb-2 px-1">
-                                <span class="flex-1">å¥å±åå®¹</span>
-                                <span class="w-16 text-center">æé</span>
+                                <span class="flex-1">奖励内容</span>
+                                <span class="w-16 text-center">权重</span>
                                 <span class="w-9"></span>
                             </div>
                             <div id="rewardListContainer" class="space-y-2"></div>
                         </div>
                     </div>
 
-                    <!-- å³åï¼é³éåæ¶é¿è®¾ç½® -->
+                    <!-- 右列：音量和时长设置 -->
                     <div class="space-y-5">
                         <!-- 2. Threshold -->
                         <div class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
                             <div class="flex justify-between text-sm font-black text-slate-300 mb-4">
-                                <label>ð¤ è¾¾æ é³ééå¼</label>
+                                <label>🎤 达标音量阈值</label>
                                 <span id="thresholdValText" class="text-cyan-400 bg-cyan-950 px-3 py-1 rounded-md border border-cyan-800">60 dB</span>
                             </div>
                             <input type="range" id="thresholdSlider" min="30" max="100" value="60" oninput="updateThreshold(this.value)" class="w-full">
@@ -212,19 +212,19 @@
 
                         <!-- 3. Duration Setup -->
                         <div class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
-                            <label class="block text-sm font-black text-slate-300 mb-4 text-center">â³ å®å¼æéæè¯»æ¶é¿</label>
+                            <label class="block text-sm font-black text-slate-300 mb-4 text-center">⏳ 刮开所需朗读时长</label>
                             <div class="flex items-center gap-4 justify-center">
                                 <div class="relative w-24">
                                     <input type="number" id="durationMin" min="0" max="30" value="1" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-center focus:border-cyan-400 outline-none font-black text-white transition-all text-xl" onchange="validateDuration()">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">å</span>
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">分</span>
                                 </div>
                                 <span class="text-slate-400 font-black text-2xl">:</span>
                                 <div class="relative w-24">
                                     <input type="number" id="durationSec" min="0" max="59" value="0" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-center focus:border-cyan-400 outline-none font-black text-white transition-all text-xl" onchange="validateDuration()">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">ç§</span>
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">秒</span>
                                 </div>
                             </div>
-                            <p id="durationWarning" class="text-xs text-rose-400 mt-3 hidden text-center font-bold bg-rose-950/50 py-2 rounded-md border border-rose-900">æ¶é¿éå¨20ç§è³30åéä¹é´ï¼</p>
+                            <p id="durationWarning" class="text-xs text-rose-400 mt-3 hidden text-center font-bold bg-rose-950/50 py-2 rounded-md border border-rose-900">时长需在20秒至30分钟之间！</p>
                         </div>
                     </div>
                 </div>
@@ -235,7 +235,7 @@
                     <span id="btnIconContainer">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132A1 1 0 0014.752 11.168z"></path></svg>
                     </span>
-                    <span id="btnText">å¼å§æ¨è¯»å®å®ä¹</span>
+                    <span id="btnText">开始晨读刮刮乐</span>
                 </button>
             </div>
         </div>
@@ -243,7 +243,7 @@
 
     <script>
         // ==========================================
-        // å¨æç²å­æç©ºèæ¯ç¹æ
+        // 动态粒子星空背景特效
         // ==========================================
         const bgCanvas = document.getElementById('bgParticleCanvas');
         const bgCtx = bgCanvas.getContext('2d');
@@ -290,7 +290,7 @@
         drawParticles();
 
         // ==========================================
-        // æ¸¸ææ ¸å¿é»è¾
+        // 游戏核心逻辑
         // ==========================================
         let gameMode = 'ticket'; 
         let isListening = false;
@@ -301,23 +301,23 @@
         
         let uploadedImage = null; 
         
-        // æ¸²æåç¦»æ¶æ
-        let ticketBgCache = null;      // æ°¸è¿å¯è§çéè²å¡çº¸åºå±
-        let activeCanvasSource = null; // éè¦è¢«æ¶ä¸é®ç½©åé©¬èµåçåå®¹ï¼ç½åºçº¢å­åºåï¼
+        // 渲染分离架构
+        let ticketBgCache = null;      // 永远可见的金色卡纸底层
+        let activeCanvasSource = null; // 需要被涂上遮罩和马赛克的内容（白底红字区域）
         
-        let finalRewardTextStr = "å¨ç­åä½ä¸"; 
+        let finalRewardTextStr = "全班免作业"; 
         let hasWon = false; 
 
-        // ä» localStorage å è½½å¥å±æ°æ®ï¼å¦ææ²¡æåä½¿ç¨é»è®¤å¼
+        // 从 localStorage 加载奖励数据，如果没有则使用默认值
         let rewards = [];
         function loadRewards() {
             const saved = localStorage.getItem('scratchRewards');
             if (saved) {
                 try {
                     rewards = JSON.parse(saved);
-                    console.log('[å­å¨] æåå è½½å·²ä¿å­çå¥å±è®¾ç½®');
+                    console.log('[存储] 成功加载已保存的奖励设置');
                 } catch (e) {
-                    console.error('[å­å¨] å è½½å¥å±è®¾ç½®å¤±è´¥ï¼ä½¿ç¨é»è®¤å¼', e);
+                    console.error('[存储] 加载奖励设置失败，使用默认值', e);
                     rewards = getDefaultRewards();
                 }
             } else {
@@ -327,25 +327,25 @@
 
         function getDefaultRewards() {
             return [
-                { id: 1, text: 'è°¢è°¢æ é¡¾', weight: 40 },
-                { id: 2, text: 'å¨ç­ççµå½±ä¸æ¬¡', weight: 10 },
-                { id: 3, text: 'å¨ç­åä½ä¸ä¸å¤©', weight: 15 },
-                { id: 4, text: 'èå¸ä¹°é¶é£', weight: 5 },
-                { id: 5, text: 'èªç±æ´»å¨ä¸èè¯¾', weight: 30 }
+                { id: 1, text: '谢谢惠顾', weight: 40 },
+                { id: 2, text: '全班看电影一次', weight: 10 },
+                { id: 3, text: '全班免作业一天', weight: 15 },
+                { id: 4, text: '老师买零食', weight: 5 },
+                { id: 5, text: '自由活动一节课', weight: 30 }
             ];
         }
 
-        // ä¿å­å¥å±å° localStorage
+        // 保存奖励到 localStorage
         function saveRewards() {
             try {
                 localStorage.setItem('scratchRewards', JSON.stringify(rewards));
-                console.log('[å­å¨] å¥å±è®¾ç½®å·²èªå¨ä¿å­');
+                console.log('[存储] 奖励设置已自动保存');
             } catch (e) {
-                console.error('[å­å¨] ä¿å­å¥å±è®¾ç½®å¤±è´¥', e);
+                console.error('[存储] 保存奖励设置失败', e);
             }
         }
 
-        // é¡µé¢å è½½æ¶åå§åå¥å±æ°æ®
+        // 页面加载时初始化奖励数据
         loadRewards();
 
         let audioContext = null;
@@ -363,20 +363,20 @@
         resizeCanvas();
         renderRewardList();
         
-        // æ¢å¤å·²ä¿å­çè®¾ç½®å° UI
+        // 恢复已保存的设置到 UI
         function restoreSettings() {
-            // æ¢å¤é³ééå¼
+            // 恢复音量阈值
             document.getElementById('thresholdSlider').value = threshold;
             document.getElementById('thresholdValText').innerText = threshold + ' dB';
             document.getElementById('thresholdLine').style.bottom = threshold + '%';
             
-            // æ¢å¤æ¶é¿æ¾ç¤º
+            // 恢复时长显示
             const minutes = Math.floor(targetDurationSeconds / 60);
             const seconds = targetDurationSeconds % 60;
             document.getElementById('durationMin').value = minutes;
             document.getElementById('durationSec').value = seconds;
             
-            console.log('[å­å¨] å·²æ¢å¤è®¾ç½® - é³ééå¼:', threshold + 'dB', 'æ¶é¿:', targetDurationSeconds + 'ç§');
+            console.log('[存储] 已恢复设置 - 音量阈值:', threshold + 'dB', '时长:', targetDurationSeconds + '秒');
         }
         restoreSettings();
 
@@ -420,11 +420,11 @@
                     emptyState.classList.add('hidden');
                 } else {
                     emptyState.classList.remove('hidden');
-                    text.innerText = "è¯·å¨å·¦ä¸è§è®¾ç½®ä¸­å¯¼å¥ç´ æ";
+                    text.innerText = "请在左上角设置中导入素材";
                 }
             } else if (gameMode === 'ticket') {
                 emptyState.classList.remove('hidden');
-                text.innerText = "è¯·éç½®å¥æ± ï¼å¹¶ç¹å»å¼å§";
+                text.innerText = "请配置奖池，并点击开始";
             }
         }
 
@@ -439,8 +439,8 @@
                     if (gameMode === 'image') {
                         activeCanvasSource = img;
                         ticketBgCache = null;
-                        finalRewardTextStr = "è§£éæå"; 
-                        document.getElementById('uploadBtnText').innerText = 'å·²é: ' + file.name.substring(0, 10) + '...';
+                        finalRewardTextStr = "解锁成功"; 
+                        document.getElementById('uploadBtnText').innerText = '已选: ' + file.name.substring(0, 10) + '...';
                         document.getElementById('uploadBtnText').classList.replace('text-cyan-300', 'text-emerald-400');
                         progress = 0;
                         hasWon = false;
@@ -462,7 +462,7 @@
                 row.innerHTML = `
                     <input type="text" value="${r.text}" onchange="updateReward(${index}, 'text', this.value)" class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-2 py-2 text-sm font-bold text-white focus:border-cyan-400 focus:outline-none transition-colors">
                     <input type="number" value="${r.weight}" min="0" onchange="updateReward(${index}, 'weight', this.value)" class="w-16 bg-slate-800 border border-slate-600 rounded-lg px-2 py-2 text-sm text-center font-black text-cyan-400 focus:border-cyan-400 focus:outline-none transition-colors">
-                    <button onclick="removeReward(${index})" class="w-9 h-9 flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-500 rounded-lg transition-colors bg-slate-800 border border-slate-600 shadow-sm cursor-pointer" title="å é¤">
+                    <button onclick="removeReward(${index})" class="w-9 h-9 flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-500 rounded-lg transition-colors bg-slate-800 border border-slate-600 shadow-sm cursor-pointer" title="删除">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 `;
@@ -473,27 +473,27 @@
         function updateReward(index, key, value) {
             if (key === 'weight') rewards[index][key] = parseInt(value) || 0;
             else rewards[index][key] = value;
-            saveRewards(); // èªå¨ä¿å­
+            saveRewards(); // 自动保存
         }
 
         function removeReward(index) {
-            if (rewards.length <= 1) return alert("æå°éè¦ä¿çä¸ä¸ªå¥å±é¡¹ï¼");
+            if (rewards.length <= 1) return alert("最少需要保留一个奖励项！");
             rewards.splice(index, 1);
             renderRewardList();
-            saveRewards(); // èªå¨ä¿å­
+            saveRewards(); // 自动保存
         }
 
         function addReward() {
-            rewards.push({ id: Date.now(), text: 'æ°å¥å±', weight: 10 });
+            rewards.push({ id: Date.now(), text: '新奖励', weight: 10 });
             renderRewardList();
-            saveRewards(); // èªå¨ä¿å­
+            saveRewards(); // 自动保存
             const container = document.getElementById('rewardListContainer');
             setTimeout(() => container.scrollTop = container.scrollHeight, 50);
         }
 
         function executeDraw() {
             let totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
-            if (totalWeight <= 0) return alert("æ»æéä¸è½ä¸º0ï¼è¯·æ£æ¥å¥æ± éç½®ï¼");
+            if (totalWeight <= 0) return alert("总权重不能为0，请检查奖池配置！");
 
             let random = Math.random() * totalWeight;
             let current = 0;
@@ -505,7 +505,7 @@
 
             finalRewardTextStr = selected.text;
             
-            // é©å½æ§åç¦»ï¼éè²å½©ç¥¨åºåº§ï¼æ°¸è¿å¯è§ï¼å ä¸­é´å®å¥åºæå­ï¼å°è¢«é®çï¼
+            // 革命性分离：金色彩票底座（永远可见）和 中间刮奖区文字（将被遮盖）
             ticketBgCache = generateTicketBg();
             activeCanvasSource = generateTicketContent(selected.text);
             
@@ -519,10 +519,10 @@
         }
 
         // ==========================================
-        // å¾å±çæé»è¾ï¼çæ­£å®ä½çå®å®ä¹
+        // 图层生成逻辑：真正实体的刮刮乐
         // ==========================================
 
-        // 1. çææ°¸è¿æ¾ç¤ºçéè²åºåº§
+        // 1. 生成永远显示的金色底座
         function generateTicketBg() {
             const tCanvas = document.createElement('canvas');
             tCanvas.width = 1200;
@@ -557,9 +557,9 @@
             ctx.font = '900 45px "Microsoft YaHei", system-ui, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText("â¨ æ¨ è¯» å® å® ä¹ â¨", tCanvas.width / 2, 110);
+            ctx.fillText("✨ 晨 读 刮 刮 乐 ✨", tCanvas.width / 2, 110);
 
-            // ç»åºä¸­é´çç½çº¸åºåï¼è¿éæ°¸è¿æ¯ç½åº
+            // 画出中间的白纸区域，这里永远是白底
             ctx.fillStyle = '#fffbeb'; 
             ctx.beginPath();
             if (ctx.roundRect) ctx.roundRect(100, 180, 1000, 270, 20);
@@ -569,21 +569,21 @@
             return tCanvas;
         }
 
-        // 2. çæéè¦è¢«é®çåé©¬èµåå¤ççæ¶å±ï¼ä»åå«ç½åºåçº¢å­ï¼
+        // 2. 生成需要被遮盖和马赛克处理的涂层（仅包含白底和红字）
         function generateTicketContent(rewardText) {
             const tCanvas = document.createElement('canvas');
             tCanvas.width = 1200;
             tCanvas.height = 500;
             const ctx = tCanvas.getContext('2d');
 
-            // ãéç¹ãåªå¨ä¸­é´å®å¥åºå¡«åç½è²ï¼è¿æ ·é©¬èµåå¼æåªä¼å½±åè¿ä¸ªåºå
+            // 【重点】只在中间刮奖区填充白色，这样马赛克引擎只会影响这个区域
             ctx.fillStyle = '#fffbeb';
             ctx.beginPath();
             if (ctx.roundRect) ctx.roundRect(100, 180, 1000, 270, 20);
             else ctx.rect(100, 180, 1000, 270);
             ctx.fill();
 
-            // å·¨å¤§çéç®å¥å±çº¢å­
+            // 巨大的醒目奖励红字
             ctx.fillStyle = '#e11d48'; 
             
             let fontSize = 160;
@@ -624,9 +624,9 @@
                 targetDurationSeconds = totalSec;
             }
             
-            // ä¿å­æ¶é¿è®¾ç½®
+            // 保存时长设置
             localStorage.setItem('scratchDuration', targetDurationSeconds);
-            console.log('[å­å¨] æè¯»æ¶é¿å·²ä¿å­:', targetDurationSeconds + 'ç§');
+            console.log('[存储] 朗读时长已保存:', targetDurationSeconds + '秒');
             
             return targetDurationSeconds;
         }
@@ -636,9 +636,9 @@
             document.getElementById('thresholdValText').innerText = val + ' dB';
             document.getElementById('thresholdLine').style.bottom = val + '%';
             
-            // ä¿å­é³ééå¼
+            // 保存音量阈值
             localStorage.setItem('scratchThreshold', threshold);
-            console.log('[å­å¨] é³ééå¼å·²ä¿å­:', threshold + 'dB');
+            console.log('[存储] 音量阈值已保存:', threshold + 'dB');
         }
 
         function toggleSettings(show) {
@@ -661,7 +661,7 @@
             validateDuration();
 
             if (gameMode === 'image') {
-                if (!uploadedImage) return alert("è¯·åä¸ä¼ ä¸å¼ ç´ æå¾çï¼");
+                if (!uploadedImage) return alert("请先上传一张素材图片！");
                 activeCanvasSource = uploadedImage;
                 ticketBgCache = null; 
                 await startMicLoop();
@@ -703,12 +703,12 @@
                 
                 const btn = document.getElementById('mainBtn');
                 btn.className = "w-full py-4 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white cursor-pointer transform hover:-translate-y-1 border border-rose-400/50";
-                document.getElementById('btnText').innerText = "åæ­¢æ£æµ";
+                document.getElementById('btnText').innerText = "停止检测";
                 document.getElementById('btnIconContainer').innerHTML = `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>`;
 
                 gameLoop();
             } catch (err) {
-                alert("æ æ³è®¿é®éº¦åé£ï¼è¯·æ£æ¥æµè§å¨æéï¼");
+                alert("无法访问麦克风，请检查浏览器权限！");
                 stopListening();
             }
         }
@@ -729,7 +729,7 @@
             
             const btn = document.getElementById('mainBtn');
             btn.className = "w-full py-4 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white cursor-pointer transform hover:-translate-y-1 border border-cyan-400/50";
-            document.getElementById('btnText').innerText = "å¼å§æ¨è¯»å®å®ä¹";
+            document.getElementById('btnText').innerText = "开始晨读刮刮乐";
             document.getElementById('btnIconContainer').innerHTML = `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132A1 1 0 0014.752 11.168z"></path></svg>`;
             
             updateEmptyState();
@@ -790,21 +790,21 @@
                     hasWon = true; 
                     renderCanvas(100); 
                     
-                    // ãå³é®ä¿®å¤ãå®æ ¼ç»é¢è®©å¨ç­çæ¸å½©ç¥¨æå­ï¼3ç§åæåºç°åéææè±å¼¹çª
+                    // 【关键修复】定格画面让全班看清彩票文字，3秒后才出现半透明撒花弹窗
                     setTimeout(() => {
                         winGame();
                     }, 3000); 
                 }
             }
             
-            // æ¯ä¸å¸§å¼ºå¶æ¸²æç»å¸ï¼é²æ­¢ç»å¸æ¶å¤±
+            // 每一帧强制渲染画布，防止画布消失
             renderCanvas(progress);
 
             animationFrameId = requestAnimationFrame(gameLoop);
         }
 
         // ==========================================
-        // æ ¸å¿æ¸²æå¼æ (ä¿®å¤äºä¹åçå¾å±è¦çBug)
+        // 核心渲染引擎 (修复了之前的图层覆盖Bug)
         // ==========================================
         function renderCanvas(currentProg) {
             if (!activeCanvasSource) return;
@@ -820,12 +820,12 @@
             const drawX = (width - drawW) / 2;
             const drawY = (height - drawH) / 2;
 
-            // 1. å¦ææéè²èæ¯ï¼æ°¸è¿åç»å¨æåºä¸
+            // 1. 如果有金色背景，永远先画在最底下
             if (ticketBgCache) {
                 ctx.drawImage(ticketBgCache, drawX, drawY, drawW, drawH);
             }
 
-            // 2. åå¤æ¸²æç®æ å±ï¼å¾ç æ åå«æå­çå®å¥åºï¼
+            // 2. 准备渲染目标层（图片 或 包含文字的刮奖区）
             const targetCanvas = document.createElement('canvas');
             targetCanvas.width = width;
             targetCanvas.height = height;
@@ -833,17 +833,17 @@
 
             tCtx.drawImage(activeCanvasSource, drawX, drawY, drawW, drawH);
             
-            // è®©åç»­çé®ç½©ååè²ææï¼ä¸¥æ ¼è¢«éå¶å¨ç®æ å±çåç´ èå´å
+            // 让后续的遮罩和变色效果，严格被限制在目标层的像素范围内
             tCtx.globalCompositeOperation = 'source-in';
 
             if (currentProg < 70) {
-                // é¶æ®µä¸ï¼çº¯è²é®ç½©çä½æå­
-                let baseColor = gameMode === 'ticket' ? 180 : 10; // å®å®ä¹ç¨äº®é¶ç°è²æ¶å±ï¼å¾çç¨æé»
+                // 阶段一：纯色遮罩盖住文字
+                let baseColor = gameMode === 'ticket' ? 180 : 10; // 刮刮乐用亮银灰色涂层，图片用暗黑
                 let lightness = baseColor + Math.floor((currentProg / 70) * 40); 
                 tCtx.fillStyle = `rgb(${lightness}, ${lightness-2}, ${lightness+5})`;
                 tCtx.fillRect(0, 0, width, height);
             } else {
-                // é¶æ®µäºï¼é©¬èµå+éæè¤ªå»ï¼90%éçº¦å¯è§ï¼100%å®å¨æ¸æ°ï¼
+                // 阶段二：马赛克+透明褪去（90%隐约可见，100%完全清晰）
                 let stage2Prog = (currentProg - 70) / 30; 
                 let blockSize = Math.max(1, Math.floor(40 - stage2Prog * 39)); 
                 
@@ -861,19 +861,19 @@
                     mCtx.drawImage(activeCanvasSource, 0, 0, drawW, drawH);
                 }
 
-                // å°é©¬èµåç»åç®æ å±
+                // 将马赛克画回目标层
                 tCtx.drawImage(mosaicCanvas, drawX, drawY);
 
-                // ãä¿®å¤æ ¸å¿ãåæ¢åææ¨¡å¼ï¼è®©é®ç½©å±è¤ªå»åªå½±åå·²æåç´ ï¼ä¸åè¦çé»è²ç©å½¢ï¼
+                // 【修复核心】切换合成模式，让遮罩层褪去只影响已有像素，不再覆盖黑色矩形！
                 tCtx.globalCompositeOperation = 'source-atop';
                 let overlayAlpha = 0.8 * (1 - stage2Prog);
                 
-                // å¨é©¬èµåä¸å å ä¸å±é¢è²ï¼è¿å±é¢è²ä¼éçè¿åº¦åéæï¼å¨90%æ¶éå¸¸æ·¡ï¼100%æ¶å¤±
+                // 在马赛克上叠加一层颜色，这层颜色会随着进度变透明，在90%时非常淡，100%消失
                 tCtx.fillStyle = gameMode === 'ticket' ? `rgba(220, 220, 220, ${overlayAlpha})` : `rgba(10, 5, 20, ${overlayAlpha})`;
                 tCtx.fillRect(0, 0, width, height);
             }
 
-            // 3. å°ç¹æå¤çå¥½çå±ï¼å çåä¸»ç»å¸ä¸ï¼
+            // 3. 将特效处理好的层，叠盖回主画布上！
             ctx.drawImage(targetCanvas, 0, 0);
         }
 
@@ -915,14 +915,14 @@
         }
 
         // ==========================================
-        // å¨å±åè½
+        // 全屏功能
         // ==========================================
         function toggleFullscreen() {
             const enterPath = document.getElementById('enterFullscreenPath');
             const exitPath = document.getElementById('exitFullscreenPath');
             
             if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
-                // è¿å¥å¨å±
+                // 进入全屏
                 const elem = document.documentElement;
                 if (elem.requestFullscreen) {
                     elem.requestFullscreen();
@@ -934,11 +934,11 @@
                     elem.msRequestFullscreen();
                 }
                 
-                // åæ¢å¾æ 
+                // 切换图标
                 enterPath.classList.add('hidden');
                 exitPath.classList.remove('hidden');
             } else {
-                // éåºå¨å±
+                // 退出全屏
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) { // Safari
@@ -949,13 +949,13 @@
                     document.msExitFullscreen();
                 }
                 
-                // åæ¢å¾æ 
+                // 切换图标
                 enterPath.classList.remove('hidden');
                 exitPath.classList.add('hidden');
             }
         }
 
-        // çå¬å¨å±ç¶æååï¼ç¨æ·æESCéåºå¨å±æ¶æ´æ°å¾æ ï¼
+        // 监听全屏状态变化（用户按ESC退出全屏时更新图标）
         document.addEventListener('fullscreenchange', updateFullscreenIcon);
         document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
         document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
@@ -966,11 +966,11 @@
             const exitPath = document.getElementById('exitFullscreenPath');
             
             if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
-                // å½åæ¯å¨å±ç¶æ
+                // 当前是全屏状态
                 enterPath.classList.add('hidden');
                 exitPath.classList.remove('hidden');
             } else {
-                // å½åä¸æ¯å¨å±ç¶æ
+                // 当前不是全屏状态
                 enterPath.classList.remove('hidden');
                 exitPath.classList.add('hidden');
             }
