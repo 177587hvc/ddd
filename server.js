@@ -264,6 +264,23 @@ async function handleApi(req, res, action) {
       return sendJSON(res, { ok: true, url: '/share.html?id=' + shareId, id: shareId });
     }
 
+    case 'adminDump': {
+      const { password } = body;
+      const ADMIN_PW = process.env.ADMIN_PASSWORD || 'admin2024';
+      if (password !== ADMIN_PW) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      const r = await db.execute('SELECT username, name, created_at, updated_at, data FROM users ORDER BY updated_at DESC');
+      const teachers = r.rows.map(row => {
+        let raw = {};
+        try { raw = JSON.parse(row.data || '{}'); } catch {}
+        return {
+          username: row.username, name: row.name,
+          createdAt: row.created_at, updatedAt: row.updated_at,
+          raw,
+        };
+      });
+      return sendJSON(res, { ok: true, teachers });
+    }
+
     default:
       return sendJSON(res, { ok: false, msg: '未知操作：' + action });
   }
@@ -284,6 +301,9 @@ const server = http.createServer(async (req, res) => {
   }
   if (url.startsWith('/backend/')) {
     res.writeHead(403); res.end('Forbidden'); return;
+  }
+  if (url === '/admin' || url === '/admin/') {
+    req.url = '/admin.html';
   }
   serveStatic(req, res);
 });

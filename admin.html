@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后台管理 - 班级宠物园</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#0f172a; color:#e2e8f0; font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif; }
+  .row:hover { background:#1e293b; }
+</style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+<h1 class="text-2xl font-bold mb-1">🐾 班级宠物园 · 后台</h1>
+<p class="text-slate-400 text-sm mb-6">查看所有老师班级与学生数据</p>
+
+<div id="loginBox" class="bg-slate-800 p-6 rounded-2xl max-w-sm mx-auto mt-12">
+  <label class="text-sm text-slate-400">管理员密码</label>
+  <input id="pw" type="password" placeholder="admin2024"
+    class="w-full mt-2 px-3 py-2 rounded-lg bg-slate-700 text-white outline-none focus:ring-2 focus:ring-violet-500">
+  <button onclick="login()" class="w-full mt-4 bg-violet-600 hover:bg-violet-500 py-2 rounded-lg font-bold">登录</button>
+  <div id="err" class="text-red-400 text-sm mt-2"></div>
+</div>
+
+<div id="main" class="hidden">
+  <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">老师数</div><div id="tTeachers" class="text-3xl font-bold mt-1">0</div></div>
+    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">学生总数</div><div id="tStudents" class="text-3xl font-bold mt-1">0</div></div>
+    <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">最近活跃</div><div id="tActive" class="text-sm mt-2 text-slate-300">-</div></div>
+  </div>
+  <div class="bg-slate-800 rounded-xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead><tr class="bg-slate-700 text-left">
+        <th class="p-3">用户名</th><th class="p-3">姓名</th><th class="p-3">学生数</th><th class="p-3">更新时间</th><th class="p-3"></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+async function login() {
+  const pw = document.getElementById('pw').value;
+  document.getElementById('err').textContent = '';
+  try {
+    const r = await fetch('/backend/api.php?action=adminDump', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const j = await r.json();
+    if (!j.ok) { document.getElementById('err').textContent = j.msg || '登录失败'; return; }
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('main').classList.remove('hidden');
+    render(j.teachers);
+  } catch (e) { document.getElementById('err').textContent = '网络错误: ' + e.message; }
+}
+
+function pickStudents(raw) {
+  if (!raw || typeof raw !== 'object') return [];
+  for (const k of ['students', 'children', 'petStudents', 'pets', 'classStudents']) {
+    if (Array.isArray(raw[k])) return raw[k];
+  }
+  return [];
+}
+
+function render(ts) {
+  document.getElementById('tTeachers').textContent = ts.length;
+  let total = 0, last = 0;
+  const tb = document.getElementById('tbody'); tb.innerHTML = '';
+  ts.forEach(t => {
+    const st = pickStudents(t.raw);
+    total += st.length;
+    const up = new Date(t.updatedAt || 0); if (up > last) last = up;
+    const tr = document.createElement('tr');
+    tr.className = 'row border-t border-slate-700';
+    tr.innerHTML =
+      '<td class="p-3">' + t.username + '</td>' +
+      '<td class="p-3">' + (t.name || '') + '</td>' +
+      '<td class="p-3">' + st.length + '</td>' +
+      '<td class="p-3 text-slate-400">' + (t.updatedAt || '').slice(0, 16).replace('T', ' ') + '</td>' +
+      '<td class="p-3 text-right"><button class="text-violet-400 hover:underline" onclick="showDetail(\'' + t.username + '\')">学生名单</button></td>';
+    tb.appendChild(tr);
+    window['d_' + t.username] = t;
+  });
+  document.getElementById('tStudents').textContent = total;
+  document.getElementById('tActive').textContent = last ? last.toLocaleString('zh-CN') : '-';
+}
+
+function showDetail(un) {
+  const t = window['d_' + un];
+  const st = pickStudents(t.raw);
+  const names = st.map(s => s.name || s.petName || s.petType || s.type || '?').join('、');
+  alert(un + '（' + (t.name || '') + '）\n学生数：' + st.length + '\n\n' + (names || '(空)'));
+}
+
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
