@@ -281,6 +281,18 @@ async function handleApi(req, res, action) {
       return sendJSON(res, { ok: true, teachers });
     }
 
+    case 'adminSaveTeacher': {
+      const { password, username, data } = body;
+      const ADMIN_PW = process.env.ADMIN_PASSWORD || 'admin2024';
+      if (password !== ADMIN_PW) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      const now = new Date().toISOString();
+      await db.execute('UPDATE users SET data = ?, version = version + 1, updated_at = ? WHERE username = ?',
+        [JSON.stringify(data || {}), now, username]);
+      await db.execute('UPDATE sessions SET data = ?, version = version + 1, updated_at = ? WHERE username = ?',
+        [JSON.stringify(data || {}), now, username]);
+      return sendJSON(res, { ok: true });
+    }
+
     default:
       return sendJSON(res, { ok: false, msg: '未知操作：' + action });
   }

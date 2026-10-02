@@ -8,11 +8,13 @@
 <style>
   body { background:#0f172a; color:#e2e8f0; font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif; }
   .row:hover { background:#1e293b; }
+  input,select { background:#334155; border:1px solid #475569; border-radius:6px; padding:4px 8px; color:#fff; font-size:13px; }
+  input:focus,select:focus { outline:none; border-color:#8b5cf6; }
 </style>
 </head>
 <body class="p-4 md:p-8 max-w-6xl mx-auto">
 <h1 class="text-2xl font-bold mb-1">🐾 班级宠物园 · 后台</h1>
-<p class="text-slate-400 text-sm mb-6">查看所有老师班级与学生数据</p>
+<p class="text-slate-400 text-sm mb-6">查看与编辑所有老师班级与学生数据</p>
 
 <div id="loginBox" class="bg-slate-800 p-6 rounded-2xl max-w-sm mx-auto mt-12">
   <label class="text-sm text-slate-400">管理员密码</label>
@@ -28,7 +30,7 @@
     <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">学生总数</div><div id="tStudents" class="text-3xl font-bold mt-1">0</div></div>
     <div class="bg-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">最近活跃</div><div id="tActive" class="text-sm mt-2 text-slate-300">-</div></div>
   </div>
-  <div class="bg-slate-800 rounded-xl overflow-hidden">
+  <div class="bg-slate-800 rounded-xl overflow-hidden mb-6">
     <table class="w-full text-sm">
       <thead><tr class="bg-slate-700 text-left">
         <th class="p-3">用户名</th><th class="p-3">姓名</th><th class="p-3">学生数</th><th class="p-3">更新时间</th><th class="p-3"></th>
@@ -36,16 +38,45 @@
       <tbody id="tbody"></tbody>
     </table>
   </div>
+
+  <div id="editor" class="hidden bg-slate-800 rounded-xl p-4">
+    <div class="flex justify-between items-center mb-3">
+      <h2 id="editorTitle" class="text-lg font-bold"></h2>
+      <button onclick="closeEditor()" class="text-slate-400 hover:text-white">关闭 ✕</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-left text-slate-400">
+          <th class="p-2">姓名</th><th class="p-2">宠物 type</th>
+          <th class="p-2">fedLegs(进度)</th><th class="p-2">chickenLegs(鸡腿)</th><th class="p-2">累计投喂</th><th class="p-2"></th>
+        </tr></thead>
+        <tbody id="editorBody"></tbody>
+      </table>
+    </div>
+    <div class="mt-4 flex gap-3">
+      <button onclick="saveTeacher()" class="bg-violet-600 hover:bg-violet-500 px-4 py-2 rounded-lg font-bold">保存修改</button>
+      <span id="saveMsg" class="text-sm self-center"></span>
+    </div>
+  </div>
 </div>
 
 <script>
+let PW = '';
+function pickStudents(raw) {
+  if (!raw || typeof raw !== 'object') return [];
+  for (const k of ['students', 'children', 'petStudents', 'pets', 'classStudents']) {
+    if (Array.isArray(raw[k])) return raw[k];
+  }
+  return [];
+}
+
 async function login() {
-  const pw = document.getElementById('pw').value;
+  PW = document.getElementById('pw').value;
   document.getElementById('err').textContent = '';
   try {
     const r = await fetch('/backend/api.php?action=adminDump', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw })
+      body: JSON.stringify({ password: PW })
     });
     const j = await r.json();
     if (!j.ok) { document.getElementById('err').textContent = j.msg || '登录失败'; return; }
@@ -53,14 +84,6 @@ async function login() {
     document.getElementById('main').classList.remove('hidden');
     render(j.teachers);
   } catch (e) { document.getElementById('err').textContent = '网络错误: ' + e.message; }
-}
-
-function pickStudents(raw) {
-  if (!raw || typeof raw !== 'object') return [];
-  for (const k of ['students', 'children', 'petStudents', 'pets', 'classStudents']) {
-    if (Array.isArray(raw[k])) return raw[k];
-  }
-  return [];
 }
 
 function render(ts) {
@@ -78,7 +101,7 @@ function render(ts) {
       '<td class="p-3">' + (t.name || '') + '</td>' +
       '<td class="p-3">' + st.length + '</td>' +
       '<td class="p-3 text-slate-400">' + (t.updatedAt || '').slice(0, 16).replace('T', ' ') + '</td>' +
-      '<td class="p-3 text-right"><button class="text-violet-400 hover:underline" onclick="showDetail(\'' + t.username + '\')">学生名单</button></td>';
+      '<td class="p-3 text-right"><button class="text-violet-400 hover:underline" onclick="openEditor(\'' + t.username + '\')">编辑学生</button></td>';
     tb.appendChild(tr);
     window['d_' + t.username] = t;
   });
@@ -86,11 +109,72 @@ function render(ts) {
   document.getElementById('tActive').textContent = last ? last.toLocaleString('zh-CN') : '-';
 }
 
-function showDetail(un) {
+let editingUser = null;
+function openEditor(un) {
+  editingUser = un;
   const t = window['d_' + un];
-  const st = pickStudents(t.raw);
-  const names = st.map(s => s.name || s.petName || s.petType || s.type || '?').join('、');
-  alert(un + '（' + (t.name || '') + '）\n学生数：' + st.length + '\n\n' + (names || '(空)'));
+  document.getElementById('editorTitle').textContent = '编辑：' + un + '（' + (t.name || '') + '）';
+  const students = pickStudents(t.raw);
+  const eb = document.getElementById('editorBody'); eb.innerHTML = '';
+  students.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-t border-slate-700';
+    tr.innerHTML =
+      '<td class="p-2"><input data-i="' + i + '" data-k="name" value="' + (s.name || '').replace(/"/g, '&quot;') + '"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="petType" value="' + (s.petType || '') + '" placeholder="留空=无宠" style="width:130px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="fedLegs" type="number" value="' + (s.fedLegs || 0) + '" style="width:90px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="chickenLegs" type="number" value="' + (s.chickenLegs || 0) + '" style="width:90px"></td>' +
+      '<td class="p-2"><input data-i="' + i + '" data-k="cumulativeFedLegs" type="number" value="' + (s.cumulativeFedLegs || 0) + '" style="width:100px"></td>' +
+      '<td class="p-2 text-right"><button class="text-red-400 hover:underline" onclick="delRow(this)">删除</button></td>';
+    eb.appendChild(tr);
+  });
+  document.getElementById('editor').classList.remove('hidden');
+  document.getElementById('saveMsg').textContent = '';
+  document.getElementById('editor').scrollIntoView({ behavior: 'smooth' });
+}
+
+function delRow(btn) { btn.closest('tr').remove(); }
+
+function closeEditor() {
+  document.getElementById('editor').classList.add('hidden');
+  editingUser = null;
+}
+
+async function saveTeacher() {
+  if (!editingUser) return;
+  const t = window['d_' + editingUser];
+  const raw = t.raw;
+  const key = ['students', 'children', 'petStudents', 'pets', 'classStudents'].find(k => Array.isArray(raw[k]));
+  const rows = document.querySelectorAll('#editorBody tr');
+  const students = [];
+  rows.forEach(tr => {
+    const ins = tr.querySelectorAll('input');
+    const o = {};
+    ins.forEach(inp => {
+      const k = inp.dataset.k;
+      if (k === 'name') o[k] = inp.value;
+      else if (k === 'petType') o[k] = inp.value || null;
+      else o[k] = Number(inp.value) || 0;
+    });
+    // 保留原 id
+    const i = Number(ins[0].dataset.i);
+    if (t.raw[key][i] && t.raw[key][i].id) o.id = t.raw[key][i].id;
+    students.push(o);
+  });
+  raw[key] = students;
+  try {
+    const r = await fetch('/backend/api.php?action=adminSaveTeacher', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: PW, username: editingUser, data: raw })
+    });
+    const j = await r.json();
+    if (j.ok) {
+      document.getElementById('saveMsg').textContent = '✓ 已保存 ' + new Date().toLocaleTimeString();
+      t.raw = raw;
+    } else {
+      document.getElementById('saveMsg').textContent = '✗ ' + (j.msg || '失败');
+    }
+  } catch (e) { document.getElementById('saveMsg').textContent = '✗ 网络错误'; }
 }
 
 document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
