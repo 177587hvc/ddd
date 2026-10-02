@@ -270,7 +270,7 @@ async function handleApi(req, res, action) {
 
     case 'adminDump': {
       const { password } = body;
-      const ADMIN_PW = process.env.ADMIN_PASSWORD || 'admin2024';
+      const ADMIN_PW = process.env.ADMIN_PASSWORD || '114514';
       if (password !== ADMIN_PW) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
       const r = await db.execute('SELECT username, name, created_at, updated_at, data FROM users ORDER BY updated_at DESC');
       const teachers = r.rows.map(row => {
@@ -294,7 +294,7 @@ async function handleApi(req, res, action) {
 
     case 'adminListPets': {
       const { password } = body;
-      if (password !== (process.env.ADMIN_PASSWORD || 'admin2024')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      if (password !== (process.env.ADMIN_PASSWORD || '114514')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
       const r = await db.execute('SELECT value FROM app_config WHERE key = ?', ['pet_types']);
       let pets = null;
       if (r.rows[0]) { try { pets = JSON.parse(r.rows[0].value); } catch {} }
@@ -303,7 +303,7 @@ async function handleApi(req, res, action) {
 
     case 'adminSavePets': {
       const { password, pets } = body;
-      if (password !== (process.env.ADMIN_PASSWORD || 'admin2024')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
+      if (password !== (process.env.ADMIN_PASSWORD || '114514')) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
       await db.execute('INSERT OR REPLACE INTO app_config (key, value) VALUES (?, ?)',
         ['pet_types', JSON.stringify(pets || [])]);
       return sendJSON(res, { ok: true });
@@ -311,7 +311,7 @@ async function handleApi(req, res, action) {
 
     case 'adminSaveTeacher': {
       const { password, username, data } = body;
-      const ADMIN_PW = process.env.ADMIN_PASSWORD || 'admin2024';
+      const ADMIN_PW = process.env.ADMIN_PASSWORD || '114514';
       if (password !== ADMIN_PW) return sendJSON(res, { ok: false, msg: '密码错误' }, 401);
       const now = new Date().toISOString();
       await db.execute('UPDATE users SET data = ?, version = version + 1, updated_at = ? WHERE username = ?',
