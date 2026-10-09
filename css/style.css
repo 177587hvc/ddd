@@ -11545,3 +11545,6 @@ body.night-mode .sc2-stats {
   zoom: var(--card-zoom, 1);
 }
 
+
+/* 宠物卡片视频背景 */
+.sc2-pet-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;border-radius:inherit;}

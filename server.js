@@ -285,6 +285,25 @@ async function handleApi(req, res, action) {
       return sendJSON(res, { ok: true, teachers });
     }
 
+    case 'getWallpaper': {
+      const { token } = body;
+      const s = await getSession(token);
+      if (!s) return sendJSON(res, { ok: false, msg: '未登录' }, 401);
+      const r = await db.execute('SELECT value FROM app_config WHERE key = ?', ['wallpaper:' + s.username]);
+      let wp = null;
+      if (r.rows[0]) { try { wp = JSON.parse(r.rows[0].value); } catch {} }
+      return sendJSON(res, { ok: true, wp });
+    }
+
+    case 'saveWallpaper': {
+      const { token, wp } = body;
+      const s = await getSession(token);
+      if (!s) return sendJSON(res, { ok: false, msg: '未登录' }, 401);
+      await db.execute('INSERT OR REPLACE INTO app_config (key, value) VALUES (?, ?)',
+        ['wallpaper:' + s.username, JSON.stringify(wp || {})]);
+      return sendJSON(res, { ok: true });
+    }
+
     case 'getPets': {
       const r = await db.execute('SELECT value FROM app_config WHERE key = ?', ['pet_types']);
       let pets = null;

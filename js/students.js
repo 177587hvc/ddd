@@ -764,6 +764,20 @@ const Students = (() => {
           onerror="this.outerHTML='<div class=sc2-pet-miss title=&quot;${pet.name}&quot;>${pet.emoji}</div>'">`;
     }
 
+    let sc2PetBg;
+    if (!s.petBg) {
+      sc2PetBg = `<div class="sc2-pet">`;
+    } else {
+      const _b = s.petBg;
+      const _isV = _b.startsWith('video:') || /\.(mp4|webm|ogg|m4v|mov)(\?|#|$)/i.test(_b);
+      if (_isV) {
+        const _src = _b.replace(/^video:/, '');
+        sc2PetBg = `<div class="sc2-pet"><video class="sc2-pet-video" src="${_src}" autoplay muted loop playsinline></video>`;
+      } else {
+        sc2PetBg = `<div class="sc2-pet" style="background-image:url('${_b}');background-size:cover;background-position:center;background-repeat:no-repeat;">`;
+      }
+    }
+
     const hungerCfg = Store.hunger.get(currentClassId);
     const hungerPhase = getPetHungerPhase(s, hungerCfg); // null | 'hungry' | 'critical' | 'dead'
 
@@ -796,7 +810,7 @@ const Students = (() => {
         <span class="sc2-lv">${hasPet ? `Lv.${li.level}` : '—'}</span>
         <button class="sc2-btn sc2-btn-more ca-more" data-id="${s.id}" title="更多">···</button>
       </div>
-      <div class="sc2-pet"${s.petBg ? ` style="background-image:url('${s.petBg}');background-size:cover;background-position:center;background-repeat:no-repeat;"` : ''}>
+      ${sc2PetBg}
         ${petBlock}
       </div>
       <div class="sc2-name-row">
@@ -3400,6 +3414,8 @@ const Students = (() => {
     { id: 'bg23', label: '背景23',  src: './宠物背景23.jpg',    minLevel: 8 },
     { id: 'bg24', label: '背景24',  src: './宠物背景24.jpg',    minLevel: 8 },
     { id: 'bg25', label: '背景25',  src: './宠物背景25.jpg',    minLevel: 8 },
+    { id: 'custom_img',   label: '自定义图片', src: '__custom_img__',   minLevel: 5 },
+    { id: 'custom_video', label: '自定义视频', src: '__custom_video__', minLevel: 5 },
   ];
 
   function showChangePetBg(id) {
@@ -3435,6 +3451,27 @@ const Students = (() => {
     // 点击背景项：高亮 + 保存当前学生（不关闭弹窗）
     document.querySelectorAll('#modal-body .petbg-item').forEach(btn => {
       btn.onclick = () => {
+        const tag = btn.dataset.bg;
+        if (tag === '__custom_img__' || tag === '__custom_video__') {
+          const isVid = tag === '__custom_video__';
+          UI.openModal(isVid ? '🎬 自定义视频背景' : '🖼️ 自定义图片背景',
+            `<p style="font-size:.95rem;margin-bottom:.5rem;color:#555">粘贴${isVid ? '视频' : '图片'}链接（.${isVid ? 'mp4/.webm' : 'jpg/.png/.webp'}，跨设备同步）</p>
+            <input type="text" id="custom-bg-url" placeholder="${isVid ? 'https://.../bg.mp4' : 'https://.../bg.jpg'}" style="width:100%;padding:.5rem .6rem;border:1px solid #ccc;border-radius:8px;font-size:.95rem;background:transparent;color:inherit">
+            <div class="modal-footer">
+              <button class="btn-ghost" onclick="UI.closeModal()">取消</button>
+              <button class="btn-primary" id="custom-bg-save">保存</button>
+            </div>`, { narrow: true });
+          document.getElementById('custom-bg-save').onclick = () => {
+            const v = document.getElementById('custom-bg-url').value.trim();
+            if (!v) { UI.toast('请输入链接', 'warning'); return; }
+            const finalSrc = isVid ? ('video:' + v) : v;
+            Store.students.update(id, { petBg: finalSrc });
+            renderCard(id);
+            UI.closeModal();
+            UI.toast('已设置自定义宠物背景', 'success');
+          };
+          return;
+        }
         selectedBg = btn.dataset.bg;
         Store.students.update(id, { petBg: selectedBg });
         renderCard(id);
