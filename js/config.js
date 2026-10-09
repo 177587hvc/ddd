@@ -498,8 +498,9 @@ window.loadXLSX = function () {
   return new Promise((resolve, reject) => {
     if (typeof XLSX !== 'undefined') { resolve(); return; }
     const CDNS = [
-      'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+      '/vendor/xlsx.full.min.js',
       'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+      'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
     ];
     let idx = 0;
     function tryLoad() {
