@@ -124,7 +124,7 @@ function serveStatic(req, res) {
     }
     const ext = path.extname(filePath).toLowerCase();
     const mime = MIME[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': 'no-cache' });
+    res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': 'no-store, max-age=0', 'Pragma': 'no-cache' });
     res.end(data);
   });
 }
