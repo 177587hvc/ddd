@@ -458,7 +458,7 @@ function getPetHungerPhase(student, hungerCfg) {
   let starveAfter = Math.max(1, Number.isFinite(rawB) ? rawB : 30);
   if (starveAfter <= hungryAfter) starveAfter = hungryAfter + 2;
   let criticalAfter = Number.isFinite(rawC) ? rawC : hungryAfter + Math.ceil((starveAfter - hungryAfter) / 2);
-  criticalAfter = Math.max(hungerAfter + 1, Math.min(starveAfter - 1, criticalAfter));
+  criticalAfter = Math.max(hungryAfter + 1, Math.min(starveAfter - 1, criticalAfter));
   if (criticalAfter <= hungryAfter || criticalAfter >= starveAfter) {
     criticalAfter = Math.min(starveAfter - 1, hungryAfter + 1);
   }
